@@ -48,6 +48,8 @@ OpenClaw plugins extend the Gateway functionality by providing additional capabi
 | [Skill Extensions](#skill-extensions) | `skill-extensions` | `openclaw-skill-extensions` | Custom skill composition and versioning | Local |
 | [Episodic Memory](#episodic-memory) | `episodic-claw` | `episodic-claw` | Episodic memory management | External (ClawHub) |
 | [Swarm Coordination](#swarmclaw) | `swarmclaw` | `swarmclaw` | Multi-agent swarm coordination | External |
+| [SwarmClaw Integration](#swarmclaw-integration) | `swarmclaw-integration` | `@heretek-ai/swarmclaw-integration-plugin` | Multi-provider LLM with automatic failover | Local |
+| [ClawBridge Dashboard](#clawbridge-dashboard) | `clawbridge` | `clawbridge-dashboard` | Mobile-first dashboard with remote access | External (Official) |
 
 ---
 
@@ -769,6 +771,198 @@ curl -fsSL https://swarmclaw.ai/install.sh | bash
 - SwarmDock marketplace for paid work
 
 **Full Documentation:** [`EXTERNAL_PROJECTS.md`](EXTERNAL_PROJECTS.md#swarmclaw)
+
+---
+
+### SwarmClaw Integration
+
+**Package:** `@heretek-ai/swarmclaw-integration-plugin`
+**Location:** `plugins/swarmclaw-integration/`
+**Version:** 1.0.0
+**License:** MIT
+
+Multi-provider LLM integration plugin with automatic failover, ensuring continuous operation even when individual providers experience outages.
+
+#### Provider Failover Chain
+
+```
+OpenAI (Primary) → Anthropic (Secondary) → Google (Tertiary) → Ollama (Local Fallback)
+```
+
+#### Features
+
+- **Multi-Provider Support:** OpenAI GPT-4o, Anthropic Claude, Google Gemini, Ollama local models
+- **Automatic Failover:** Seamless provider switching on failure with exponential backoff
+- **Health Monitoring:** Continuous provider health checks with configurable thresholds
+- **Provider Statistics:** Request counts, latency tracking, success rates
+- **Event-Driven:** Real-time events for failover, recovery, and status changes
+
+#### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SwarmClaw Plugin                              │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │                   Failover Manager                       │    │
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐    │    │
+│  │  │ OpenAI  │→│Anthropic│→│ Google  │→│ Ollama  │    │    │
+│  │  │ (P0)    │  │ (P1)    │  │ (P2)    │  │ (P3)    │    │    │
+│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘    │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                              │                                   │
+│              ┌───────────────┼───────────────┐                  │
+│              ▼               ▼               ▼                  │
+│     ┌────────────────┐ ┌────────────┐ ┌──────────────┐         │
+│     │ Provider Config│ │Health Check│ │  Statistics  │         │
+│     │                │ │  Manager   │ │   Tracker    │         │
+│     └────────────────┘ └────────────┘ └──────────────┘         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Installation
+
+```bash
+cd plugins/swarmclaw-integration
+npm install
+```
+
+#### Configuration
+
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Edit with your API keys
+nano .env
+```
+
+**Environment Variables:**
+
+```bash
+# Provider failover order
+SWARMCLAW_FAILOVER_ORDER=openai,anthropic,google,ollama
+
+# OpenAI
+OPENAI_API_KEY=sk-...
+OPENAI_MODELS=gpt-4o,gpt-4-turbo
+
+# Anthropic
+ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_MODELS=claude-sonnet-4-20250514,claude-3-5-sonnet-20241022
+
+# Google
+GOOGLE_API_KEY=...
+GOOGLE_MODELS=gemini-2.0-flash,gemini-1.5-pro
+
+# Ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODELS=llama3.1,qwen2.5
+```
+
+#### Usage
+
+```javascript
+import { createPlugin } from '@heretek-ai/swarmclaw-integration-plugin';
+
+// Initialize plugin
+const plugin = await createPlugin();
+
+// Send chat with automatic failover
+const response = await plugin.chat([
+  { role: 'user', content: 'Hello!' }
+], {
+  temperature: 0.7,
+  maxTokens: 1024
+});
+
+console.log(`Response from ${response.provider}: ${response.content}`);
+```
+
+#### Health Monitoring
+
+```javascript
+// Get plugin status
+const status = plugin.getStatus();
+console.log(status);
+
+// Get provider health
+const health = plugin.getProviderHealth('openai');
+console.log(health);
+
+// Get statistics
+const stats = plugin.getStats('openai');
+console.log(stats);
+```
+
+#### Events
+
+```javascript
+// Listen for failover events
+plugin.on('failoverTriggered', (event) => {
+  console.warn(`Failover: ${event.fromProvider} → ${event.nextProvider}`);
+});
+
+// Listen for provider recovery
+plugin.on('providerRecovered', (event) => {
+  console.log(`Provider ${event.provider} recovered`);
+});
+```
+
+#### Health Check Script
+
+```bash
+# Run health check
+npm run healthcheck
+```
+
+#### Full Documentation
+
+- [`SKILL.md`](../plugins/swarmclaw-integration/SKILL.md) - Complete API documentation
+- [`README.md`](../plugins/swarmclaw-integration/README.md) - Quick start guide
+- [`DEPLOYMENT.md`](DEPLOYMENT.md#swarmclaw-multi-provider-integration) - Deployment instructions
+
+---
+
+### ClawBridge Dashboard
+
+**Package:** `clawbridge-dashboard`
+**Source:** https://github.com/dreamwing/clawbridge
+**License:** MIT
+**Stats:** 212 stars, 22 forks
+
+Mobile-first dashboard for OpenClaw with zero-config remote access via Cloudflare Tunnel.
+
+**Features:**
+- Mobile-first PWA design with offline support
+- Zero-config remote access via Cloudflare Tunnel
+- Live activity feed (WebSocket streaming)
+- Token economy tracking and cost diagnostics
+- Memory timeline visualization
+- Mission control (cron triggers, service restarts)
+- System health monitoring
+
+**Installation:**
+```bash
+# Quick install
+curl -sL https://clawbridge.app/install.sh | bash
+
+# With Cloudflare Tunnel
+curl -sL https://clawbridge.app/install.sh | bash -s -- --tunnel
+```
+
+**Configuration:**
+```bash
+# Generate access key
+openssl rand -hex 32
+
+# Add to .env
+CLAWBRIDGE_ACCESS_KEY=<generated-key>
+```
+
+**Full Documentation:** [`plugins/clawbridge-dashboard/README.md`](../plugins/clawbridge-dashboard/README.md)
+
+**Security:** ✅ MIT licensed, Cloudflare tunnel encryption, access key auth, no open firewall ports
 
 ---
 

@@ -1,0 +1,39 @@
+{
+  "name": "@heretek-ai/conflict-monitor-plugin",
+  "version": "1.0.0",
+  "description": "Conflict monitoring and resolution for Heretek OpenClaw - ACC brain function implementation",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint src/",
+    "healthcheck": "node scripts/healthcheck.js"
+  },
+  "keywords": [
+    "openclaw",
+    "conflict-monitor",
+    "acc",
+    "anterior-cingulate",
+    "conflict-detection",
+    "heretek",
+    "amygdala"
+  ],
+  "author": "Heretek AI",
+  "license": "MIT",
+  "dependencies": {
+    "eventemitter3": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heretek-ai/heretek-openclaw",
+    "directory": "plugins/conflict-monitor"
+  }
+}

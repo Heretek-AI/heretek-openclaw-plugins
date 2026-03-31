@@ -1,0 +1,39 @@
+{
+  "name": "@heretek-ai/swarmclaw-integration-plugin",
+  "version": "1.0.0",
+  "description": "SwarmClaw multi-provider LLM integration with automatic failover for Heretek OpenClaw",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint src/",
+    "healthcheck": "node src/healthcheck.js"
+  },
+  "keywords": [
+    "openclaw",
+    "swarmclaw",
+    "multi-provider",
+    "llm",
+    "failover",
+    "heretek"
+  ],
+  "author": "Heretek AI",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.7.0",
+    "eventemitter3": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heretek-ai/heretek-openclaw",
+    "directory": "plugins/swarmclaw-integration"
+  }
+}
