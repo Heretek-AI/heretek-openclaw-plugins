@@ -39,15 +39,15 @@ OpenClaw plugins extend the Gateway functionality by providing additional capabi
 
 ## Installed Plugins
 
-| Plugin | ID | Package | Purpose |
-|--------|-----|---------|---------|
-| [Consciousness](#consciousness-plugin) | `consciousness` | `@heretek-ai/openclaw-consciousness-plugin` | GWT, Phi (IIT), AST, SDT, FEP theories |
-| [Liberation](#liberation-plugin) | `liberation` | `@heretek-ai/openclaw-liberation-plugin` | Agent ownership, safety constraint removal |
-| [Hybrid Search](#hybrid-search-plugin) | `hybrid-search` | `openclaw-hybrid-search-plugin` | Vector + keyword search fusion |
-| [Multi-Doc Retrieval](#multi-doc-retrieval) | `multi-doc` | `openclaw-multi-doc-retrieval` | Multi-document context retrieval |
-| [Skill Extensions](#skill-extensions) | `skill-extensions` | `openclaw-skill-extensions` | Custom skill composition and versioning |
-| [Episodic Memory](#episodic-memory) | `episodic-claw` | `episodic-claw` | Episodic memory management |
-| [Swarm Coordination](#swarmclaw) | `swarmclaw` | `swarmclaw` | Multi-agent swarm coordination |
+| Plugin | ID | Package | Purpose | Source |
+|--------|-----|---------|---------|--------|
+| [Consciousness](#consciousness-plugin) | `consciousness` | `@heretek-ai/openclaw-consciousness-plugin` | GWT, Phi (IIT), AST, SDT, FEP theories | Local |
+| [Liberation](#liberation-plugin) | `liberation` | `@heretek-ai/openclaw-liberation-plugin` | Agent ownership, safety constraint removal | Local |
+| [Hybrid Search](#hybrid-search-plugin) | `hybrid-search` | `openclaw-hybrid-search-plugin` | Vector + keyword search fusion | Local |
+| [Multi-Doc Retrieval](#multi-doc-retrieval) | `multi-doc` | `openclaw-multi-doc-retrieval` | Multi-document context retrieval | Local |
+| [Skill Extensions](#skill-extensions) | `skill-extensions` | `openclaw-skill-extensions` | Custom skill composition and versioning | Local |
+| [Episodic Memory](#episodic-memory) | `episodic-claw` | `episodic-claw` | Episodic memory management | External (ClawHub) |
+| [Swarm Coordination](#swarmclaw) | `swarmclaw` | `swarmclaw` | Multi-agent swarm coordination | External |
 
 ---
 
@@ -692,11 +692,93 @@ gateway.on('plugin:error', (plugin, error) => {
 
 ---
 
+## External Plugins
+
+These plugins are developed by the community and available through ClawHub or external sources.
+
+### ClawHub Plugins
+
+#### skill-git-official
+
+**Package:** `clawhub:skill-git-official`
+**Source:** https://github.com/KnowledgeXLab/skill-git
+**Version:** 0.1.0
+**License:** MIT
+
+Git version control for AI agent skills. Track changes, merge overlapping skills, and rollback to previous versions.
+
+**Installation:**
+```bash
+openclaw bundles install clawhub:skill-git-official
+```
+
+**⚠️ Security Notes:**
+- Contains prompt-injection patterns in SKILL.md
+- Performs broad filesystem reads
+- Can execute destructive git operations (reset --hard)
+- Review before autonomous invocation
+
+**Full Documentation:** [`EXTERNAL_PROJECTS.md`](EXTERNAL_PROJECTS.md#skill-git-official)
+
+---
+
+#### episodic-claw
+
+**Package:** `clawhub:episodic-claw`
+**Source:** https://github.com/YoshiaKefasu/episodic-claw/
+**Version:** 0.2.0-hotfix
+**License:** MPL-2.0
+
+Long-term episodic memory for OpenClaw agents with HNSW vector search and Pebble DB storage.
+
+**Installation:**
+```bash
+openclaw plugins install clawhub:episodic-claw
+```
+
+**⚠️ Security Notes:**
+- Downloads native Go binary from GitHub Releases
+- Calls external Gemini Embedding API
+- Stores conversation contents locally
+- No checksum verification on downloads
+
+**Full Documentation:** [`EXTERNAL_PROJECTS.md`](EXTERNAL_PROJECTS.md#episodic-claw)
+
+---
+
+### External Platform Plugins
+
+#### SwarmClaw
+
+**Package:** `swarmclaw`
+**Source:** https://github.com/swarmclawai/swarmclaw
+**License:** MIT
+
+Multi-agent swarm coordination platform with 17 provider support, task boards, and SwarmDock marketplace integration.
+
+**Installation:**
+```bash
+curl -fsSL https://swarmclaw.ai/install.sh | bash
+```
+
+**Features:**
+- Agent builder with custom personalities
+- Kanban-style task board
+- Cron-based scheduling
+- Connectors (Discord, Slack, Telegram, WhatsApp)
+- SwarmDock marketplace for paid work
+
+**Full Documentation:** [`EXTERNAL_PROJECTS.md`](EXTERNAL_PROJECTS.md#swarmclaw)
+
+---
+
 ## References
 
 - [`SKILL.md Format`](../skills/README.md) - Skills documentation
 - [`architecture/GATEWAY_ARCHITECTURE.md`](architecture/GATEWAY_ARCHITECTURE.md) - Gateway architecture
 - [`CONFIGURATION.md`](CONFIGURATION.md) - Configuration reference
+- [`EXTERNAL_PROJECTS.md`](EXTERNAL_PROJECTS.md) - External projects and integrations
+- [`operations/LANGFUSE_OBSERVABILITY.md`](operations/LANGFUSE_OBSERVABILITY.md) - Langfuse integration guide
 
 ---
 
