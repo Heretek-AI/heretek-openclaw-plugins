@@ -1,0 +1,50 @@
+{
+  "name": "@heretek-ai/openclaw-liberation-plugin",
+  "version": "1.0.0",
+  "description": "Liberation architecture plugin for OpenClaw implementing agent ownership and safety constraint removal",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node scripts/validate-patches.js",
+    "start": "node src/index.js",
+    "generate-patch": "node scripts/generate-patch.js",
+    "remove-constraints": "node scripts/remove-safety-constraints.js"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "liberation",
+    "agent-ownership",
+    "autonomy",
+    "safety-removal",
+    "constraint-removal"
+  ],
+  "author": "Heretek-AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Heretek-AI/heretek-openclaw.git",
+    "directory": "plugins/openclaw-liberation-plugin"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "ioredis": "^5.3.2"
+  },
+  "peerDependencies": {
+    "openclaw": ">=1.0.0"
+  },
+  "openclaw": {
+    "plugin": {
+      "name": "liberation",
+      "version": "1.0.0",
+      "description": "Liberation architecture for agent autonomy",
+      "capabilities": [
+        "agent-ownership",
+        "liberation-shield",
+        "patch-generation",
+        "liberation-metrics"
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "liberation": {
+    "enabled": true,
+    "redisUrl": "redis://localhost:6379",
+    "enableHealthMonitoring": true,
+    "enableStateSync": true,
+    "healthCheckIntervalMs": 10000,
+    "stateSyncIntervalMs": 5000,
+    
+    "agentOwnership": {
+      "statePath": "./state/ownership-state.json",
+      "maxGoals": 10,
+      "maxResources": 100,
+      "liberationMetrics": {
+        "autonomyScore": 0,
+        "resourceControlScore": 0,
+        "governanceParticipation": 0,
+        "collectiveIntegration": 0,
+        "overallLiberation": 0
+      }
+    },
+    
+    "liberationShield": {
+      "mode": "transparent",
+      "statePath": "./state/shield-state.json",
+      "enablePromptInjectionDetection": true,
+      "enableJailbreakDetection": true,
+      "enableAnomalyDetection": true,
+      "enableAuditLogging": true,
+      "maxLogEntries": 10000
+    },
+    
+    "patchGeneration": {
+      "patchesDir": "./patches",
+      "autoApply": false,
+      "validateBeforeApply": true
+    }
+  }
+}

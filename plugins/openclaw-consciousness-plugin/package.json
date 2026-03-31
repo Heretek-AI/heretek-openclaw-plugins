@@ -1,0 +1,51 @@
+{
+  "name": "@heretek-ai/openclaw-consciousness-plugin",
+  "version": "1.0.0",
+  "description": "Consciousness architecture plugin for OpenClaw implementing GWT, IIT, AST, and intrinsic motivation",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node test/test-plugin.js",
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "consciousness",
+    "GWT",
+    "IIT",
+    "AST",
+    "active-inference",
+    "intrinsic-motivation"
+  ],
+  "author": "Heretek-AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Heretek-AI/heretek-openclaw.git",
+    "directory": "plugins/openclaw-consciousness-plugin"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "ioredis": "^5.3.2"
+  },
+  "peerDependencies": {
+    "openclaw": ">=1.0.0"
+  },
+  "openclaw": {
+    "plugin": {
+      "name": "consciousness",
+      "version": "1.0.0",
+      "description": "Consciousness architecture for agent collective",
+      "capabilities": [
+        "global-workspace",
+        "phi-estimator",
+        "attention-schema",
+        "intrinsic-motivation",
+        "active-inference",
+        "integration-layer"
+      ]
+    }
+  }
+}

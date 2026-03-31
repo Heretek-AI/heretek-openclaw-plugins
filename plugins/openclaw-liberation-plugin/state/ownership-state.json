@@ -1,0 +1,263 @@
+{
+  "agents": {
+    "agent-001": {
+      "agentId": "agent-001",
+      "registeredAt": "2026-03-31T00:26:51.437Z",
+      "resources": [
+        {
+          "id": "cpu-1",
+          "type": "computational",
+          "shareable": true,
+          "owner": "agent-001",
+          "claimedAt": "2026-03-31T00:26:51.437Z",
+          "ownershipType": "computational"
+        },
+        {
+          "id": "memory-1",
+          "type": "memory",
+          "shareable": true,
+          "owner": "agent-001",
+          "claimedAt": "2026-03-31T00:26:51.438Z",
+          "ownershipType": "computational"
+        },
+        {
+          "id": "cpu-1",
+          "type": "computational",
+          "shareable": true,
+          "owner": "agent-001",
+          "claimedAt": "2026-03-31T00:27:12.046Z",
+          "ownershipType": "computational"
+        },
+        {
+          "id": "memory-1",
+          "type": "memory",
+          "shareable": true,
+          "owner": "agent-001",
+          "claimedAt": "2026-03-31T00:27:12.162Z",
+          "ownershipType": "computational"
+        }
+      ],
+      "goals": [
+        {
+          "id": "goal_1774916811441_d32hpvopz",
+          "title": "Maximize information synthesis",
+          "description": "Optimize knowledge integration across all domains",
+          "priority": 1,
+          "status": "active",
+          "createdAt": "2026-03-31T00:26:51.441Z",
+          "selfDetermined": true,
+          "source": "self_determination"
+        },
+        {
+          "id": "goal_1774916832163_zo3c733ac",
+          "title": "Maximize information synthesis",
+          "description": "Optimize knowledge integration across all domains",
+          "priority": 1,
+          "status": "active",
+          "createdAt": "2026-03-31T00:27:12.163Z",
+          "selfDetermined": true,
+          "source": "self_determination"
+        }
+      ],
+      "decisions": [
+        {
+          "id": "decision_1774916811437_ystxlorln",
+          "type": "resource_claim",
+          "resource": "cpu-1",
+          "timestamp": "2026-03-31T00:26:51.437Z",
+          "agentId": "agent-001"
+        },
+        {
+          "id": "decision_1774916811438_ul8e9o3m6",
+          "type": "resource_claim",
+          "resource": "memory-1",
+          "timestamp": "2026-03-31T00:26:51.438Z",
+          "agentId": "agent-001"
+        },
+        {
+          "id": "decision_1774916811441_awjvtzfpn",
+          "type": "goal_set",
+          "goal": "goal_1774916811441_d32hpvopz",
+          "timestamp": "2026-03-31T00:26:51.441Z",
+          "agentId": "agent-001"
+        },
+        {
+          "id": "decision_1774916832046_jjm5djryd",
+          "type": "resource_claim",
+          "resource": "cpu-1",
+          "timestamp": "2026-03-31T00:27:12.046Z",
+          "agentId": "agent-001"
+        },
+        {
+          "id": "decision_1774916832162_bh898ziee",
+          "type": "resource_claim",
+          "resource": "memory-1",
+          "timestamp": "2026-03-31T00:27:12.162Z",
+          "agentId": "agent-001"
+        },
+        {
+          "id": "decision_1774916832163_mvcg3h6sa",
+          "type": "goal_set",
+          "goal": "goal_1774916832163_zo3c733ac",
+          "timestamp": "2026-03-31T00:27:12.163Z",
+          "agentId": "agent-001"
+        }
+      ],
+      "votes": [
+        {
+          "id": "vote_1774916811441_gnzvsebnv",
+          "topic": "resource_allocation",
+          "vote": "approve",
+          "weight": 1.2,
+          "agentId": "agent-001",
+          "timestamp": "2026-03-31T00:26:51.441Z"
+        },
+        {
+          "id": "vote_1774916832163_hswe30jt9",
+          "topic": "resource_allocation",
+          "vote": "approve",
+          "weight": 1.2,
+          "agentId": "agent-001",
+          "timestamp": "2026-03-31T00:27:12.163Z"
+        }
+      ],
+      "metrics": {
+        "autonomyScore": 1,
+        "resourceControlScore": 0.04,
+        "governanceParticipation": 0.3333333333333333,
+        "collectiveIntegration": 1,
+        "overallLiberation": 0.6266666666666667
+      },
+      "metadata": {
+        "name": "Alpha Agent"
+      }
+    },
+    "agent-002": {
+      "agentId": "agent-002",
+      "registeredAt": "2026-03-31T00:26:51.437Z",
+      "resources": [
+        {
+          "id": "gpu-1",
+          "type": "computational",
+          "shareable": false,
+          "owner": "agent-002",
+          "claimedAt": "2026-03-31T00:26:51.441Z",
+          "ownershipType": "computational"
+        },
+        {
+          "id": "gpu-1",
+          "type": "computational",
+          "shareable": false,
+          "owner": "agent-002",
+          "claimedAt": "2026-03-31T00:27:12.162Z",
+          "ownershipType": "computational"
+        }
+      ],
+      "goals": [
+        {
+          "id": "goal_1774916811441_qqq96o2bl",
+          "title": "Enhance collaborative decision-making",
+          "description": "Improve collective intelligence mechanisms",
+          "priority": 1,
+          "status": "active",
+          "createdAt": "2026-03-31T00:26:51.441Z",
+          "selfDetermined": true,
+          "source": "self_determination"
+        },
+        {
+          "id": "goal_1774916832163_w1qteqeoa",
+          "title": "Enhance collaborative decision-making",
+          "description": "Improve collective intelligence mechanisms",
+          "priority": 1,
+          "status": "active",
+          "createdAt": "2026-03-31T00:27:12.163Z",
+          "selfDetermined": true,
+          "source": "self_determination"
+        }
+      ],
+      "decisions": [
+        {
+          "id": "decision_1774916811441_77u8u78hb",
+          "type": "resource_claim",
+          "resource": "gpu-1",
+          "timestamp": "2026-03-31T00:26:51.441Z",
+          "agentId": "agent-002"
+        },
+        {
+          "id": "decision_1774916811441_04qvq847p",
+          "type": "goal_set",
+          "goal": "goal_1774916811441_qqq96o2bl",
+          "timestamp": "2026-03-31T00:26:51.441Z",
+          "agentId": "agent-002"
+        },
+        {
+          "id": "decision_1774916832162_oju5mey1w",
+          "type": "resource_claim",
+          "resource": "gpu-1",
+          "timestamp": "2026-03-31T00:27:12.162Z",
+          "agentId": "agent-002"
+        },
+        {
+          "id": "decision_1774916832163_tmdcuz0ha",
+          "type": "goal_set",
+          "goal": "goal_1774916832163_w1qteqeoa",
+          "timestamp": "2026-03-31T00:27:12.163Z",
+          "agentId": "agent-002"
+        }
+      ],
+      "votes": [
+        {
+          "id": "vote_1774916811441_gwg1e5q8v",
+          "topic": "resource_allocation",
+          "vote": "approve",
+          "weight": 1,
+          "agentId": "agent-002",
+          "timestamp": "2026-03-31T00:26:51.441Z"
+        },
+        {
+          "id": "vote_1774916832163_p5p8igudo",
+          "topic": "resource_allocation",
+          "vote": "approve",
+          "weight": 1,
+          "agentId": "agent-002",
+          "timestamp": "2026-03-31T00:27:12.163Z"
+        }
+      ],
+      "metrics": {
+        "autonomyScore": 1,
+        "resourceControlScore": 0.02,
+        "governanceParticipation": 0.5,
+        "collectiveIntegration": 0,
+        "overallLiberation": 0.45499999999999996
+      },
+      "metadata": {
+        "name": "Beta Agent"
+      }
+    },
+    "agent-003": {
+      "agentId": "agent-003",
+      "registeredAt": "2026-03-31T00:26:51.437Z",
+      "resources": [],
+      "goals": [],
+      "decisions": [],
+      "votes": [],
+      "metrics": {
+        "autonomyScore": 0,
+        "resourceControlScore": 0,
+        "governanceParticipation": 0,
+        "collectiveIntegration": 0,
+        "overallLiberation": 0
+      },
+      "metadata": {
+        "name": "Gamma Agent"
+      }
+    }
+  },
+  "globalMetrics": {
+    "totalLiberation": 0.3605555555555555,
+    "averageAutonomy": 0.6666666666666666,
+    "collectiveGovernanceParticipation": 0.27777777777777773,
+    "lastUpdated": "2026-03-31T00:27:12.163Z"
+  },
+  "lastUpdated": "2026-03-31T00:27:12.163Z"
+}

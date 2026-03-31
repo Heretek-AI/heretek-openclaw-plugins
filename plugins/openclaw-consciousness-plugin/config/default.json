@@ -1,0 +1,51 @@
+{
+  "consciousness": {
+    "enabled": true,
+    "redisUrl": "redis://localhost:6379",
+    "enableHealthMonitoring": true,
+    "enableStateSync": true,
+    "healthCheckIntervalMs": 10000,
+    "stateSyncIntervalMs": 5000,
+    
+    "globalWorkspace": {
+      "ignitionThreshold": 0.7,
+      "maxWorkspaceSize": 7,
+      "competitionCycleMs": 1000,
+      "broadcastHistorySize": 1000
+    },
+    
+    "phiEstimator": {
+      "historySize": 1000,
+      "sampleIntervalMs": 10000,
+      "components": {
+        "integration": true,
+        "causality": true,
+        "coverage": true
+      }
+    },
+    
+    "attentionSchema": {
+      "historySize": 100,
+      "modelIntervalMs": 1000,
+      "shiftThreshold": 0.3
+    },
+    
+    "intrinsicMotivation": {
+      "goalThreshold": 0.6,
+      "historySize": 1000,
+      "drives": {
+        "curiosity": { "weight": 0.3, "baseline": 0.5, "decay": 0.1 },
+        "competence": { "weight": 0.25, "baseline": 0.5, "decay": 0.05 },
+        "autonomy": { "weight": 0.25, "baseline": 0.5, "decay": 0.05 },
+        "relatedness": { "weight": 0.2, "baseline": 0.5, "decay": 0.1 }
+      }
+    },
+    
+    "activeInference": {
+      "learningRate": 0.1,
+      "precision": 1.0,
+      "maxIterations": 100,
+      "errorThreshold": 0.01
+    }
+  }
+}
