@@ -1,0 +1,54 @@
+{
+  "name": "@heretek-ai/openclaw-mcp-connectors",
+  "version": "1.0.0",
+  "description": "MCP (Model Context Protocol) connectors for OpenClaw external service integration",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "start": "node src/index.js",
+    "lint": "eslint src/"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "mcp",
+    "connectors",
+    "api",
+    "external-services",
+    "integration"
+  ],
+  "author": "Heretek-AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Heretek-AI/heretek-openclaw.git",
+    "directory": "plugins/openclaw-mcp-connectors"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "ioredis": "^5.3.2",
+    "lru-cache": "^10.1.0",
+    "node-fetch": "^2.7.0",
+    "async-mutex": "^0.4.0",
+    "crypto-js": "^4.2.0"
+  },
+  "peerDependencies": {
+    "openclaw": ">=1.0.0"
+  },
+  "openclaw": {
+    "plugin": {
+      "name": "mcp-connectors",
+      "version": "1.0.0",
+      "description": "MCP connectors for external API integration",
+      "capabilities": [
+        "mcp-client",
+        "api-authentication",
+        "response-caching",
+        "rate-limiting",
+        "unified-abstraction"
+      ]
+    }
+  }
+}
