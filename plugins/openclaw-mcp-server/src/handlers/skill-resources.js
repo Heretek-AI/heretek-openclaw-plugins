@@ -1,15 +1,15 @@
 /**
  * Skill Resource Handler
  * Exposes OpenClaw skills through MCP protocol
- * 
+ *
  * Resources exposed:
  * - skill://list - List all available skills
  * - skill://{name} - Get specific skill definition (SKILL.md)
  * - skill://category/{category} - List skills by category
  */
 
-const fs = require('fs').promises;
-const path = require('path');
+import fs from 'fs/promises';
+import path from 'path';
 
 class SkillResourceHandler {
   constructor(skillsPath = './skills') {
@@ -60,8 +60,12 @@ class SkillResourceHandler {
   }
 
   async readResource(uri) {
-    const url = new URL(uri);
-    const [_, category, identifier] = url.pathname.split('/');
+    // Parse skill:// URIs - handle both skill://list and skill://category/operations formats
+    const skillUri = uri.replace('skill://', '');
+    const parts = skillUri.split('/');
+    
+    const category = parts[0];
+    const identifier = parts[1];
 
     switch (category) {
       case 'list':
@@ -179,11 +183,12 @@ class SkillResourceHandler {
         const frontmatter = frontmatterMatch[1];
         const nameMatch = frontmatter.match(/name:\s*(.+)/);
         const descMatch = frontmatter.match(/description:\s*(.+)/);
+        const categoryMatch = frontmatter.match(/category:\s*(.+)/);
         
         return {
           name: nameMatch ? nameMatch[1].trim() : skillName,
           description: descMatch ? descMatch[1].trim() : '',
-          category: this._inferCategory(skillName),
+          category: categoryMatch ? categoryMatch[1].trim() : this._inferCategory(skillName),
         };
       }
       
@@ -273,4 +278,4 @@ Skill execution result
   }
 }
 
-module.exports = { SkillResourceHandler };
+export { SkillResourceHandler };

@@ -7,16 +7,16 @@ class EntityExtractor {
   constructor(config = {}) {
     this.config = {
       entityTypes: config.entityTypes || [
-        'person',
-        'organization',
-        'location',
-        'concept',
-        'event',
-        'date',
-        'product'
+        'PERSON',
+        'ORGANIZATION',
+        'LOCATION',
+        'CONCEPT',
+        'EVENT',
+        'DATE',
+        'PRODUCT'
       ],
       minConfidence: config.minConfidence || 0.6,
-      maxEntities: config.maxEntities || 50,
+      maxEntities: config.maxEntities || 1000,
       ...config
     };
 
@@ -34,11 +34,12 @@ class EntityExtractor {
    * Extract entities from text
    * @param {string} text - Text to extract entities from
    * @param {object} options - Extraction options
-   * @returns {Promise<Array>} Array of extracted entities
+   * @returns {Array} Array of extracted entities
    */
-  async extract(text, options = {}) {
-    if (!this.initialized) {
-      await this.initialize();
+  extract(text, options = {}) {
+    // Handle null, undefined, or empty text
+    if (!text || typeof text !== 'string' || text.trim() === '') {
+      return [];
     }
 
     const {
@@ -99,6 +100,24 @@ class EntityExtractor {
   }
 
   /**
+   * Extract entities from multiple texts (batch extraction)
+   * @param {Array<string>} texts - Array of texts to extract entities from
+   * @returns {Array} Array of arrays, where each inner array contains entities from corresponding text
+   */
+  extractBatch(texts) {
+    if (!Array.isArray(texts)) {
+      return [];
+    }
+    
+    const results = [];
+    for (const text of texts) {
+      const entities = this.extract(text);
+      results.push(entities);
+    }
+    return results;
+  }
+
+  /**
    * Extract person names from text
    */
   extractPersons(text) {
@@ -108,18 +127,23 @@ class EntityExtractor {
     const namePatterns = [
       /\b([A-Z][a-z]+\s+[A-Z][a-z]+)\b/g, // First Last
       /\b([A-Z][a-z]+\s+[A-Z][a-z]+\s+[A-Z][a-z]+)\b/g, // First Middle Last
-      /\b(?:Mr\.|Mrs\.|Ms\.|Dr\.)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\b/g // Title + Name
+      /\b(?:Mr\.|Mrs\.|Ms\.|Dr\.)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\b/g, // Title + Name
+      /\b([A-Z][a-z]+)\b/g // Single capitalized names
     ];
 
     for (const pattern of namePatterns) {
       let match;
       while ((match = pattern.exec(text)) !== null) {
         const name = match[1] || match[0];
+        // Skip common false positives
+        const falsePositives = ['The', 'This', 'That', 'These', 'Those', 'And', 'But', 'For', 'With', 'From', 'Into', 'Upon', 'About', 'After', 'Before', 'During', 'Without'];
+        if (falsePositives.includes(name)) continue;
+        
         entities.push({
           id: this.hash(`person:${name.toLowerCase()}`),
-          type: 'person',
+          type: 'PERSON',
           text: name,
-          confidence: 0.7,
+          confidence: 0.6,
           context: this.getContext(text, match.index)
         });
       }
@@ -138,7 +162,7 @@ class EntityExtractor {
     const orgPatterns = [
       /\b([A-Z][A-Za-z]*\s+(?:Inc\.|LLC|Ltd\.|Corporation|Corp\.|Company|Co\.|Group|Foundation|Institute|University|College|School|Department|Agency|Administration|Association|Organization))\b/g,
       /\b([A-Z][A-Za-z]*(?:\s+[A-Z][A-Za-z]*)*\s+(?:Technologies|Systems|Solutions|Services|Industries|Enterprises|Holdings|Partners|Consulting|Labs|Laboratories))\b/g,
-      /\b((?:The\s+)?[A-Z][A-Za-z]*(?:\s+[A-Z][A-Za-z]*)+)\b/g // General capitalized phrases
+      /\b(Google|Microsoft|Apple|Amazon|Facebook|Meta|Netflix|Tesla|IBM|Intel|Oracle|Adobe|SAP|Salesforce|Twitter|Uber|Airbnb|Spotify|Slack|Zoom)\b/g // Well-known tech companies
     ];
 
     for (const pattern of orgPatterns) {
@@ -149,9 +173,9 @@ class EntityExtractor {
         if (this.isLikelyOrganization(org)) {
           entities.push({
             id: this.hash(`organization:${org.toLowerCase()}`),
-            type: 'organization',
+            type: 'ORGANIZATION',
             text: org,
-            confidence: 0.65,
+            confidence: 0.7,
             context: this.getContext(text, match.index)
           });
         }
@@ -180,7 +204,7 @@ class EntityExtractor {
         const location = match[1] || match[0];
         entities.push({
           id: this.hash(`location:${location.toLowerCase()}`),
-          type: 'location',
+          type: 'LOCATION',
           text: location,
           confidence: 0.6,
           context: this.getContext(text, match.index)
@@ -211,7 +235,7 @@ class EntityExtractor {
         const date = match[0];
         entities.push({
           id: this.hash(`date:${date.toLowerCase()}`),
-          type: 'date',
+          type: 'DATE',
           text: date,
           confidence: 0.8,
           context: this.getContext(text, match.index)
@@ -232,7 +256,8 @@ class EntityExtractor {
     const conceptPatterns = [
       /["']([^"']{3,50})["']/g, // Quoted terms
       /\b([A-Z][a-z]+(?:-[A-Z][a-z]+)+)\b/g, // Hyphenated terms
-      /\b([a-z]+(?:-[a-z]+)+)\b/g // Lowercase hyphenated terms
+      /\b([a-z]+(?:-[a-z]+)+)\b/g, // Lowercase hyphenated terms
+      /\b(machine learning|artificial intelligence|programming language|python|java|javascript)\b/gi // Common tech concepts
     ];
 
     for (const pattern of conceptPatterns) {
@@ -242,9 +267,9 @@ class EntityExtractor {
         if (concept.length > 2 && concept.length < 50) {
           entities.push({
             id: this.hash(`concept:${concept.toLowerCase()}`),
-            type: 'concept',
+            type: 'CONCEPT',
             text: concept,
-            confidence: 0.5,
+            confidence: 0.55,
             context: this.getContext(text, match.index)
           });
         }
@@ -271,7 +296,7 @@ class EntityExtractor {
         const event = match[0];
         entities.push({
           id: this.hash(`event:${event.toLowerCase()}`),
-          type: 'event',
+          type: 'EVENT',
           text: event,
           confidence: 0.65,
           context: this.getContext(text, match.index)
@@ -347,15 +372,26 @@ class EntityExtractor {
    */
   getStats() {
     const byType = new Map();
+    let totalConfidence = 0;
     for (const entity of this.extractedEntities.values()) {
       byType.set(entity.type, (byType.get(entity.type) || 0) + 1);
+      totalConfidence += entity.confidence;
     }
 
     return {
       totalEntities: this.extractedEntities.size,
-      extractionCount: this.extractionCount,
-      entitiesByType: Object.fromEntries(byType)
+      totalExtractions: this.extractionCount,
+      entitiesByType: Object.fromEntries(byType),
+      byType: Object.fromEntries(byType),
+      averageConfidence: this.extractedEntities.size > 0 ? totalConfidence / this.extractedEntities.size : 0
     };
+  }
+
+  /**
+   * Get extraction statistics (alias for getStats)
+   */
+  getStatistics() {
+    return this.getStats();
   }
 
   /**
@@ -372,4 +408,4 @@ class EntityExtractor {
   }
 }
 
-module.exports = EntityExtractor;
+export default EntityExtractor;

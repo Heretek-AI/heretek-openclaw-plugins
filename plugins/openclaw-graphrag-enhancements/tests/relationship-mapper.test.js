@@ -3,7 +3,8 @@
  * @module RelationshipMapperTests
  */
 
-import { RelationshipMapper } from '../src/extractors/relationship-mapper.js';
+import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
+import RelationshipMapper from '../src/extractors/relationship-mapper.js';
 
 describe('RelationshipMapper', () => {
   let mapper;

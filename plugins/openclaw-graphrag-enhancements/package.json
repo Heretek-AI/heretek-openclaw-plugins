@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "GraphRAG enhancements for OpenClaw with entity extraction, community detection, and multi-hop reasoning",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start": "node src/index.js",
     "lint": "eslint src/"
   },
@@ -33,9 +34,8 @@
     "lru-cache": "^10.1.0",
     "cosine-similarity": "^1.0.0"
   },
-  "peerDependencies": {
-    "openclaw": ">=1.0.0",
-    "@heretek-ai/openclaw-hybrid-search-plugin": ">=1.0.0"
+  "devDependencies": {
+    "jest": "^29.7.0"
   },
   "openclaw": {
     "plugin": {

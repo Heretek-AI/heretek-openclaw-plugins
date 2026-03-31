@@ -644,4 +644,4 @@ ${Array.isArray(inputs) ? inputs.join('\n') : inputs}
   }
 }
 
-module.exports = { PromptHandler };
+export { PromptHandler };

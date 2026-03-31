@@ -501,4 +501,4 @@ class GraphTraverser {
   }
 }
 
-module.exports = GraphTraverser;
+export default GraphTraverser;

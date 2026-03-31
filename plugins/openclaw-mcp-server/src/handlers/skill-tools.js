@@ -1,17 +1,17 @@
 /**
  * Skill Tool Handler
  * Exposes OpenClaw skills as executable MCP tools
- * 
+ *
  * Tools exposed:
  * - skill-execute: Execute any OpenClaw skill by name
  * - skill-list: List available skills
  * - skill-info: Get information about a specific skill
  */
 
-const fs = require('fs').promises;
-const path = require('path');
-const { exec, spawn } = require('child_process');
-const { promisify } = require('util');
+import fs from 'fs/promises';
+import path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
@@ -404,4 +404,4 @@ class SkillToolHandler {
   }
 }
 
-module.exports = { SkillToolHandler };
+export { SkillToolHandler };

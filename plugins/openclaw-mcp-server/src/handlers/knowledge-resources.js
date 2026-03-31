@@ -1,7 +1,7 @@
 /**
  * Knowledge Resource Handler
  * Exposes OpenClaw knowledge base resources through MCP protocol
- * 
+ *
  * Resources exposed:
  * - knowledge://docs/list - List all documents
  * - knowledge://docs/{path} - Get specific document
@@ -10,8 +10,8 @@
  * - knowledge://graph/query - Query knowledge graph
  */
 
-const fs = require('fs').promises;
-const path = require('path');
+import fs from 'fs/promises';
+import path from 'path';
 
 class KnowledgeResourceHandler {
   constructor(knowledgePath = './knowledge') {
@@ -420,4 +420,4 @@ class KnowledgeResourceHandler {
   }
 }
 
-module.exports = { KnowledgeResourceHandler };
+export { KnowledgeResourceHandler };

@@ -3,10 +3,10 @@
  * Combines entity extraction, relationship mapping, and graph traversal for RAG
  */
 
-const EntityExtractor = require('../extractors/entity-extractor');
-const RelationshipMapper = require('../extractors/relationship-mapper');
-const CommunityDetector = require('../communities/community-detector');
-const GraphTraverser = require('../traversal/graph-traverser');
+import EntityExtractor from '../extractors/entity-extractor.js';
+import RelationshipMapper from '../extractors/relationship-mapper.js';
+import CommunityDetector from '../communities/community-detector.js';
+import GraphTraverser from '../traversal/graph-traverser.js';
 
 class GraphRAG {
   constructor(config = {}) {
@@ -49,6 +49,9 @@ class GraphRAG {
       nodes: [],
       edges: []
     };
+    this.entities = new Map();
+    this.relationships = new Map();
+    this.communities = [];
 
     this.initialized = false;
     this.processingCount = 0;
@@ -73,6 +76,7 @@ class GraphRAG {
     }
 
     const { id, content, metadata = {} } = document;
+    const docId = id || `doc-${Date.now()}`;
 
     // Extract entities
     const entities = await this.entityExtractor.extract(content);
@@ -90,7 +94,7 @@ class GraphRAG {
         ...metadata,
         entityType: entity.type,
         confidence: entity.confidence,
-        sourceDocument: id
+        sourceDocument: docId
       }
     }));
 
@@ -119,19 +123,31 @@ class GraphRAG {
     }
 
     // Store document
-    this.documents.set(id, {
+    this.documents.set(docId, {
       ...document,
+      id: docId,
       entities: entities.map(e => e.id),
-      relationships: relationships.map(r => 
+      relationships: relationships.map(r =>
         this.relationshipMapper.getRelationshipId(r.source, r.target, r.type)
       ),
       processedAt: Date.now()
     });
 
+    // Update entities and relationships maps
+    for (const entity of entities) {
+      this.entities.set(entity.id, entity);
+    }
+    for (const rel of relationships) {
+      const relId = this.relationshipMapper.getRelationshipId(rel.source, rel.target, rel.type);
+      this.relationships.set(relId, rel);
+    }
+
     this.processingCount++;
 
     return {
-      documentId: id,
+      documentId: docId,
+      entities: entities,
+      relationships: relationships,
       entitiesFound: entities.length,
       relationshipsFound: relationships.length,
       nodesAdded: nodes.length,
@@ -154,11 +170,17 @@ class GraphRAG {
       )
     );
 
+    const successfulResults = results.filter(r => !r.error);
+    const totalEntities = successfulResults.reduce((sum, r) => sum + (r.entities?.length || 0), 0);
+    const totalRelationships = successfulResults.reduce((sum, r) => sum + (r.relationships?.length || 0), 0);
+
     return {
-      total: documents.length,
-      successful: results.filter(r => !r.error).length,
+      processed: successfulResults.length,
       failed: results.filter(r => r.error).length,
-      results
+      documents: successfulResults,
+      total: documents.length,
+      totalEntities,
+      totalRelationships
     };
   }
 
@@ -177,7 +199,15 @@ class GraphRAG {
       options
     );
 
-    return communities;
+    this.communities = communities;
+
+    return {
+      communities,
+      count: communities.length,
+      stats: {
+        communityCount: communities.length
+      }
+    };
   }
 
   /**
@@ -207,9 +237,12 @@ class GraphRAG {
 
     if (seedNodes.length === 0) {
       return {
+        nodes: [],
         results: [],
+        seedNodes: [],
         reasoningChains: [],
         communities: [],
+        context: '',
         metadata: {
           query,
           seedNodesFound: 0,
@@ -246,10 +279,14 @@ class GraphRAG {
     }
 
     // Compile results
-    const results = this.compileResults(seedNodes, reasoningChains, topK);
+    const compiledResults = this.compileResults(seedNodes, reasoningChains, topK);
+    const nodes = compiledResults.nodes || [];
 
     return {
-      results,
+      nodes,
+      results: nodes,
+      context: nodes.map(r => r.content).join('\n'),
+      seedNodes: seedNodes,
       reasoningChains: reasoningChains.slice(0, topK),
       communities: communities.slice(0, 5), // Top 5 communities
       metadata: {
@@ -312,6 +349,7 @@ class GraphRAG {
 
     // Add nodes from reasoning chains
     for (const chain of reasoningChains) {
+      if (!chain.path || !Array.isArray(chain.path)) continue;
       for (const node of chain.path) {
         if (node && !resultMap.has(node.id)) {
           resultMap.set(node.id, {
@@ -328,9 +366,14 @@ class GraphRAG {
     }
 
     // Convert to array and sort
-    return Array.from(resultMap.values())
+    const nodes = Array.from(resultMap.values())
       .sort((a, b) => b.score - a.score)
       .slice(0, topK);
+
+    return {
+      nodes,
+      reasoningChains
+    };
   }
 
   /**
@@ -370,6 +413,7 @@ class GraphRAG {
     return {
       query,
       context: contextParts.join('\n\n'),
+      documents: retrieval.results || [],
       results: retrieval.results,
       reasoningChains: retrieval.reasoningChains,
       metadata: retrieval.metadata
@@ -390,8 +434,12 @@ class GraphRAG {
       processingCount: this.processingCount,
       graph: {
         nodes: this.graph.nodes.length,
-        edges: this.graph.edges.length
+        edges: this.graph.edges.length,
+        communities: this.communities
       },
+      entities: this.entities,
+      relationships: this.relationships,
+      communities: this.communities,
       entityExtraction: entityStats,
       relationshipMapping: relationshipStats,
       communityDetection: communityStats,
@@ -405,6 +453,9 @@ class GraphRAG {
   clear() {
     this.documents.clear();
     this.graph = { nodes: [], edges: [] };
+    this.entities.clear();
+    this.relationships.clear();
+    this.communities = [];
     this.entityExtractor.clear();
     this.relationshipMapper.clear();
     this.communityDetector.clear();
@@ -455,4 +506,4 @@ class GraphRAG {
   }
 }
 
-module.exports = GraphRAG;
+export default GraphRAG;

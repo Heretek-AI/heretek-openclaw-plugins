@@ -3,7 +3,8 @@
  * @module GraphRAGTests
  */
 
-import { GraphRAG } from '../src/algorithms/graph-rag.js';
+import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
+import GraphRAG from '../src/algorithms/graph-rag.js';
 
 describe('GraphRAG', () => {
   let graphRag;

@@ -9,28 +9,28 @@
  * - Prompts: Common agent interaction templates
  */
 
-const { Server } = require('@modelcontextprotocol/sdk/server/index.js');
-const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
-const {
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   ListResourcesRequestSchema,
   ReadResourceRequestSchema,
   ListPromptsRequestSchema,
   GetPromptRequestSchema
-} = require('@modelcontextprotocol/sdk/types.js');
-const { z } = require('zod');
+} from '@modelcontextprotocol/sdk/types.js';
+import { z } from 'zod';
 
 // Import resource handlers
-const { MemoryResourceHandler } = require('./handlers/memory-resources.js');
-const { KnowledgeResourceHandler } = require('./handlers/knowledge-resources.js');
-const { SkillResourceHandler } = require('./handlers/skill-resources.js');
+import { MemoryResourceHandler } from './handlers/memory-resources.js';
+import { KnowledgeResourceHandler } from './handlers/knowledge-resources.js';
+import { SkillResourceHandler } from './handlers/skill-resources.js';
 
 // Import tool handlers
-const { SkillToolHandler } = require('./handlers/skill-tools.js');
+import { SkillToolHandler } from './handlers/skill-tools.js';
 
 // Import prompt handlers
-const { PromptHandler } = require('./handlers/prompts.js');
+import { PromptHandler } from './handlers/prompts.js';
 
 class OpenClawMCPServer {
   constructor(config = {}) {
@@ -256,8 +256,8 @@ async function main() {
 }
 
 // Run if executed directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-module.exports = { OpenClawMCPServer };
+export { OpenClawMCPServer };

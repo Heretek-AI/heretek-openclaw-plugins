@@ -7,19 +7,20 @@ class RelationshipMapper {
   constructor(config = {}) {
     this.config = {
       relationshipTypes: config.relationshipTypes || [
-        'related_to',
-        'part_of',
-        'causes',
-        'similar_to',
-        'references',
-        'located_in',
-        'member_of',
-        'works_at',
-        'created_by',
-        'owns'
+        'IS_A',
+        'PART_OF',
+        'CAUSES',
+        'SIMILAR_TO',
+        'REFERENCES',
+        'LOCATED_IN',
+        'MEMBER_OF',
+        'WORKS_AT',
+        'CREATED_BY',
+        'OWNS',
+        'RELATED_TO'
       ],
       minConfidence: config.minConfidence || 0.5,
-      maxRelationships: config.maxRelationships || 100,
+      maxRelationships: config.maxRelationships || 1000,
       ...config
     };
 
@@ -89,6 +90,56 @@ class RelationshipMapper {
     }
 
     this.mappingCount++;
+    return relationships;
+  }
+
+  /**
+   * Extract relationships between entities (synchronous alias for map)
+   * @param {string} text - Source text for context
+   * @param {Array} entities - Array of entities to find relationships between
+   * @param {object} options - Extraction options
+   * @returns {Array} Array of mapped relationships
+   */
+  extract(text, entities, options = {}) {
+    // Handle null, undefined, or empty text
+    if (!text || typeof text !== 'string' || text.trim() === '') {
+      return [];
+    }
+
+    // Handle null or empty entities
+    if (!entities || !Array.isArray(entities) || entities.length === 0) {
+      return [];
+    }
+
+    const {
+      relationshipTypes = this.config.relationshipTypes,
+      minConfidence = this.config.minConfidence,
+      maxRelationships = this.config.maxRelationships
+    } = options;
+
+    const relationships = [];
+
+    // Generate candidate pairs
+    const pairs = this.generateCandidatePairs(entities);
+
+    // Analyze each pair for relationships
+    for (const pair of pairs) {
+      const relationship = this.analyzeRelationship(pair.entity1, pair.entity2, text);
+      
+      if (
+        relationship &&
+        relationship.confidence >= minConfidence &&
+        relationshipTypes.includes(relationship.type)
+      ) {
+        relationships.push(relationship);
+      }
+
+      if (relationships.length >= maxRelationships) break;
+    }
+
+    // Update statistics
+    this.mappingCount++;
+
     return relationships;
   }
 
@@ -164,47 +215,92 @@ class RelationshipMapper {
   analyzeSyntacticRelationship(entity1, entity2, text) {
     const patterns = [
       {
-        pattern: new RegExp(`\\b${this.escapeRegex(entity1.text)}\\s+(?:is|was|are|were)\\s+(?:a|an|the)?\\s*${this.escapeRegex(entity2.text)}\\b`, 'i'),
-        type: 'is_a',
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+(?:is|was|are|were)\\s+(?:a|an|the)?\\s*${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'IS_A',
         confidence: 0.8
       },
       {
-        pattern: new RegExp(`\\b${this.escapeRegex(entity1.text)}\\s+(?:of|in|at|from)\\s+${this.escapeRegex(entity2.text)}\\b`, 'i'),
-        type: 'related_to',
-        confidence: 0.6
-      },
-      {
-        pattern: new RegExp(`\\b${this.escapeRegex(entity1.text)}\\s+(?:works at|employed by|works for)\\s+${this.escapeRegex(entity2.text)}\\b`, 'i'),
-        type: 'works_at',
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+is a subset of\\s+${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'IS_A',
         confidence: 0.85
       },
       {
-        pattern: new RegExp(`\\b${this.escapeRegex(entity1.text)}\\s+(?:created|founded|established|built)\\s+${this.escapeRegex(entity2.text)}\\b`, 'i'),
-        type: 'created_by',
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+is part of\\s+(?:the\\s+)?${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'PART_OF',
+        confidence: 0.85
+      },
+      {
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+is related to\\s+(?:the\\s+)?${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'RELATED_TO',
+        confidence: 0.65
+      },
+      {
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+(?:of|in|at|from)\\s+(?:the\\s+)?${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'RELATED_TO',
+        confidence: 0.6
+      },
+      {
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+(?:works at|employed by|works for)\\s+(?:the\\s+)?${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'WORKS_AT',
+        confidence: 0.85
+      },
+      {
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+(?:created|founded|established|built)\\s+(?:the\\s+)?${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'CREATED_BY',
         confidence: 0.8
       },
       {
-        pattern: new RegExp(`\\b${this.escapeRegex(entity1.text)}\\s+(?:owns|owns|controls|holds)\\s+${this.escapeRegex(entity2.text)}\\b`, 'i'),
-        type: 'owns',
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+(?:owns|owns|controls|holds)\\s+(?:the\\s+)?${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'OWNS',
         confidence: 0.75
       },
       {
-        pattern: new RegExp(`\\b${this.escapeRegex(entity1.text)}\\s+(?:located in|based in|situated in|in)\\s+${this.escapeRegex(entity2.text)}\\b`, 'i'),
-        type: 'located_in',
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+(?:is\\s+)?(?:located in|based in|situated in|in)\\s+(?:the\\s+)?${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'LOCATED_IN',
         confidence: 0.7
       },
       {
-        pattern: new RegExp(`\\b${this.escapeRegex(entity1.text)}\\s+(?:member of|belongs to|part of)\\s+${this.escapeRegex(entity2.text)}\\b`, 'i'),
-        type: 'member_of',
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+(?:member of|belongs to|part of)\\s+(?:the\\s+)?${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'PART_OF',
         confidence: 0.75
       },
       {
-        pattern: new RegExp(`\\b${this.escapeRegex(entity1.text)}\\s+(?:causes|leads to|results in|triggers)\\s+${this.escapeRegex(entity2.text)}\\b`, 'i'),
-        type: 'causes',
+        pattern: new RegExp(`\\b(?:the\\s+)?${this.escapeRegex(entity1.text)}\\s+(?:causes|leads to|results in|triggers)\\s+(?:the\\s+)?${this.escapeRegex(entity2.text)}\\b`, 'i'),
+        type: 'CAUSES',
         confidence: 0.7
       }
     ];
 
+    // Also check reverse order (entity2 -> entity1)
+    const reversePatterns = [
+      {
+        pattern: new RegExp(`\\b${this.escapeRegex(entity2.text)}\\s+(?:is|was|are|were)\\s+(?:a|an|the)?\\s*${this.escapeRegex(entity1.text)}\\b`, 'i'),
+        type: 'IS_A',
+        confidence: 0.8
+      },
+      {
+        pattern: new RegExp(`\\b${this.escapeRegex(entity2.text)}\\s+is part of\\s+${this.escapeRegex(entity1.text)}\\b`, 'i'),
+        type: 'PART_OF',
+        confidence: 0.85
+      },
+      {
+        pattern: new RegExp(`\\b${this.escapeRegex(entity2.text)}\\s+(?:causes|leads to|results in|triggers)\\s+${this.escapeRegex(entity1.text)}\\b`, 'i'),
+        type: 'CAUSES',
+        confidence: 0.7
+      },
+      {
+        pattern: new RegExp(`\\b${this.escapeRegex(entity2.text)}\\s+(?:is located in|is based in|is situated in|is in)\\s+${this.escapeRegex(entity1.text)}\\b`, 'i'),
+        type: 'LOCATED_IN',
+        confidence: 0.7
+      },
+      {
+        pattern: new RegExp(`\\b${this.escapeRegex(entity2.text)}\\s+is related to\\s+${this.escapeRegex(entity1.text)}\\b`, 'i'),
+        type: 'RELATED_TO',
+        confidence: 0.6
+      }
+    ];
+
+    // Check forward patterns
     for (const { pattern, type, confidence } of patterns) {
       if (pattern.test(text)) {
         return {
@@ -218,8 +314,26 @@ class RelationshipMapper {
           direction: 'forward'
         };
       }
+    }
 
-      // Check reverse pattern
+    // Check reverse patterns
+    for (const { pattern, type, confidence } of reversePatterns) {
+      if (pattern.test(text)) {
+        return {
+          source: entity2.id,
+          target: entity1.id,
+          sourceEntity: entity2,
+          targetEntity: entity1,
+          type,
+          confidence,
+          evidence: this.extractEvidence(text, pattern),
+          direction: 'reverse'
+        };
+      }
+    }
+
+    // Check reverse pattern (original logic for patterns not in reversePatterns)
+    for (const { pattern, type, confidence } of patterns) {
       const reversePattern = new RegExp(
         pattern.source.replace(
           this.escapeRegex(entity1.text),
@@ -408,16 +522,28 @@ class RelationshipMapper {
    */
   getStats() {
     const byType = new Map();
+    let totalConfidence = 0;
     for (const rel of this.relationships.values()) {
       byType.set(rel.type, (byType.get(rel.type) || 0) + 1);
+      totalConfidence += rel.confidence;
     }
 
     return {
       totalRelationships: this.relationships.size,
+      totalExtractions: this.mappingCount,
       mappingCount: this.mappingCount,
       relationshipsByType: Object.fromEntries(byType),
-      connectedEntities: this.entityConnections.size
+      byType: Object.fromEntries(byType),
+      connectedEntities: this.entityConnections.size,
+      averageConfidence: this.relationships.size > 0 ? totalConfidence / this.relationships.size : 0
     };
+  }
+
+  /**
+   * Get mapping statistics (alias for getStats)
+   */
+  getStatistics() {
+    return this.getStats();
   }
 
   /**
@@ -435,6 +561,42 @@ class RelationshipMapper {
   escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
+
+  /**
+   * Validate relationship type
+   */
+  isValidRelationshipType(type) {
+    return this.config.relationshipTypes.includes(type);
+  }
+
+  /**
+   * Validate entity pair for a relationship type
+   */
+  isValidEntityPair(source, target, relationshipType) {
+    // Basic validation - entities should have text and type
+    if (!source || !target || !source.text || !target.text || !source.type || !target.type) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Extract relationships from multiple texts (batch extraction)
+   * @param {Array<string>} texts - Array of texts to extract relationships from
+   * @returns {Array} Array of arrays, where each inner array contains relationships from corresponding text
+   */
+  extractBatch(texts) {
+    if (!Array.isArray(texts)) {
+      return [];
+    }
+    
+    const results = [];
+    for (const text of texts) {
+      const relationships = this.extract(text, []);
+      results.push(relationships);
+    }
+    return results;
+  }
 }
 
-module.exports = RelationshipMapper;
+export default RelationshipMapper;

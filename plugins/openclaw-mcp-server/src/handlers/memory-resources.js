@@ -1,7 +1,7 @@
 /**
  * Memory Resource Handler
  * Exposes OpenClaw memory resources through MCP protocol
- * 
+ *
  * Resources exposed:
  * - memory://episodic/list - List episodic memories
  * - memory://episodic/{id} - Get specific episodic memory
@@ -10,8 +10,8 @@
  * - memory://session/{agent} - Get agent session memory
  */
 
-const fs = require('fs').promises;
-const path = require('path');
+import fs from 'fs/promises';
+import path from 'path';
 
 class MemoryResourceHandler {
   constructor(memoryPath = './memory') {
@@ -430,4 +430,4 @@ class MemoryResourceHandler {
   }
 }
 
-module.exports = { MemoryResourceHandler };
+export { MemoryResourceHandler };

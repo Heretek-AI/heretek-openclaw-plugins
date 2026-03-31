@@ -3,7 +3,8 @@
  * @module EntityExtractorTests
  */
 
-import { EntityExtractor } from '../src/extractors/entity-extractor.js';
+import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
+import EntityExtractor from '../src/extractors/entity-extractor.js';
 
 describe('EntityExtractor', () => {
   let extractor;

@@ -404,4 +404,4 @@ class CommunityDetector {
   }
 }
 
-module.exports = CommunityDetector;
+export default CommunityDetector;
