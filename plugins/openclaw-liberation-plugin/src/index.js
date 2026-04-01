@@ -1,4 +1,4 @@
-const LiberationPlugin = require('./index.js.bak');
+const LiberationPlugin = require('./original-index.js');
 module.exports = {
   register(api) {
     try {

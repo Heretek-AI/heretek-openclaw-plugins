@@ -1,4 +1,4 @@
-const ConsciousnessPlugin = require('./index.js.bak');
+const ConsciousnessPlugin = require('./original-index.js');
 module.exports = {
   register(api) {
     try {

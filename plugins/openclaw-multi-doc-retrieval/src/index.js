@@ -1,4 +1,4 @@
-const MultiDocRetrievalPlugin = require('./index.js.bak');
+const MultiDocRetrievalPlugin = require('./original-index.js');
 module.exports = {
   register(api) {
     const plugin = new MultiDocRetrievalPlugin(api.config || {});

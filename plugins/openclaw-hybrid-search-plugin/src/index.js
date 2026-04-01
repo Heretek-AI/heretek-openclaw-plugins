@@ -1,4 +1,4 @@
-const HybridSearchPlugin = require('./index.js.bak');
+const HybridSearchPlugin = require('./original-index.js');
 module.exports = {
   register(api) {
     const plugin = new HybridSearchPlugin(api.config || {});

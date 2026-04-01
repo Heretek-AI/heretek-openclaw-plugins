@@ -1,4 +1,4 @@
-const SkillExtensionsPlugin = require('./index.js.bak');
+const SkillExtensionsPlugin = require('./original-index.js');
 module.exports = {
   register(api) {
     const plugin = new SkillExtensionsPlugin(api.config || {});
