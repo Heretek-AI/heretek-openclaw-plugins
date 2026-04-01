@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "algorithm": "sha256",
+  "lastUpdated": "2026-04-01T14:18:00-04:00",
+  "skills": {},
+  "metadata": {
+    "description": "Checksum registry for Heretek skills - ensures integrity and detects tampering",
+    "verificationPolicy": "strict",
+    "autoVerifyOnLoad": true,
+    "allowedAlgorithms": ["sha256", "sha384", "sha512"]
+  }
+}

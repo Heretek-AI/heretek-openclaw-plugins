@@ -1,0 +1,21 @@
+# Heretek Skill Versioning System
+# Semantic Versioning (SemVer 2.0.0)
+# Format: MAJOR.MINOR.PATCH
+
+MAJOR=0
+MINOR=1
+PATCH=0
+
+# Pre-release identifier (optional)
+# PRERELEASE=alpha.1
+
+# Build metadata (optional)
+# BUILD=20260401
+
+# Version history:
+# 0.1.0 - Initial release
+#   - Skill-git patterns implementation
+#   - Checksum verification system
+#   - Filesystem access restrictions
+#   - Audit logging framework
+#   - Triad consensus mechanism for major versions

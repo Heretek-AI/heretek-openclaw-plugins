@@ -1,0 +1,23 @@
+{
+  "version": "0.1.0",
+  "description": "Index of all triad consensus decisions for skill versioning",
+  "consensusRecords": [],
+  "triadMembers": [],
+  "rules": {
+    "majorVersion": {
+      "requiredVotes": 3,
+      "threshold": "unanimous",
+      "description": "Breaking changes require full triad consensus"
+    },
+    "minorVersion": {
+      "requiredVotes": 2,
+      "threshold": "majority",
+      "description": "New features (backward compatible) require majority"
+    },
+    "patchVersion": {
+      "requiredVotes": 1,
+      "threshold": "single",
+      "description": "Bug fixes require single maintainer approval"
+    }
+  }
+}
