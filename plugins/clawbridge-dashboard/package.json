@@ -44,10 +44,17 @@
   "installation": {
     "quickInstall": "curl -sL https://clawbridge.app/install.sh | bash",
     "manualInstall": "git clone https://github.com/dreamwing/clawbridge.git && cd clawbridge && npm install",
-    "dependencies": ["nodejs>=18", "npm>=9"]
+    "dependencies": [
+      "nodejs>=18",
+      "npm>=9"
+    ]
   },
   "configuration": {
     "envFile": "plugins/clawbridge-dashboard/.env.example",
     "gatewayConfig": "openclaw.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heretek/heretek-openclaw-plugins.git"
   }
 }

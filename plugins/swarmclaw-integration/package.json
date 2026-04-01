@@ -33,7 +33,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/heretek-ai/heretek-openclaw",
-    "directory": "plugins/swarmclaw-integration"
+    "url": "https://github.com/heretek/heretek-openclaw-plugins.git"
   }
 }

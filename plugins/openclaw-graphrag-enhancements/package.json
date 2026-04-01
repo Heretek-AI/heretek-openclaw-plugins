@@ -23,8 +23,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Heretek-AI/heretek-openclaw.git",
-    "directory": "plugins/openclaw-graphrag-enhancements"
+    "url": "https://github.com/heretek/heretek-openclaw-plugins.git"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -51,8 +50,22 @@
         "graph-rag"
       ],
       "config": {
-        "entityTypes": ["person", "organization", "location", "concept", "event"],
-        "relationshipTypes": ["related_to", "part_of", "causes", "similar_to", "references", "located_in", "member_of"],
+        "entityTypes": [
+          "person",
+          "organization",
+          "location",
+          "concept",
+          "event"
+        ],
+        "relationshipTypes": [
+          "related_to",
+          "part_of",
+          "causes",
+          "similar_to",
+          "references",
+          "located_in",
+          "member_of"
+        ],
         "communityResolution": 0.5,
         "maxHops": 3,
         "minCommunitySize": 2

@@ -22,8 +22,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Heretek-AI/heretek-openclaw.git",
-    "directory": "plugins/openclaw-hybrid-search-plugin"
+    "url": "https://github.com/heretek/heretek-openclaw-plugins.git"
   },
   "engines": {
     "node": ">=18.0.0"
