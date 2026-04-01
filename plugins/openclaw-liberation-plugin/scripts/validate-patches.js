@@ -9,12 +9,15 @@
  */
 
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
-import { resolve, join } from 'node:path';
-import { cwd } from 'node:process';
+import { resolve, join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Get the directory of this script (not the current working directory)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const patchesDir = resolve(__dirname, '..', 'patches');
 
 console.log('=== OpenClaw Liberation Patch Validator ===\n');
-
-const patchesDir = resolve(cwd(), 'patches');
 
 // Check patches directory
 if (!existsSync(patchesDir)) {
