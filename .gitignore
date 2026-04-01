@@ -1,0 +1,16 @@
+plugins/clawbridge-dashboard/node_modules/*
+plugins/openclaw-consciousness-plugin/node_modules/*
+plugins/openclaw-mcp-connectors/node_modules/*
+plugins/skill-git-official/node_modules/*
+plugins/conflict-monitor/node_modules/*
+plugins/openclaw-graphrag-enhancements/node_modules/*
+plugins/openclaw-mcp-server/node_modules/*
+plugins/swarmclaw/node_modules/*
+plugins/emotional-salience/node_modules/*
+plugins/openclaw-hybrid-search-plugin/node_modules/*
+plugins/openclaw-multi-doc-retrieval/node_modules/*
+plugins/swarmclaw-integration/node_modules/*
+plugins/episodic-claw/node_modules/*
+plugins/openclaw-liberation-plugin/node_modules/*
+plugins/openclaw-skill-extensions/node_modules/*
+plugins/templates/node_modules/*
