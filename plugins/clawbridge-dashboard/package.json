@@ -1,9 +1,12 @@
 {
-  "name": "clawbridge-dashboard",
+  "name": "@heretek-ai/clawbridge-dashboard",
   "version": "1.0.0",
   "description": "ClawBridge mobile-first dashboard integration for Heretek OpenClaw",
   "source": "https://github.com/dreamwing/clawbridge",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "integration": {
     "type": "external-dashboard",
     "port": 3000,

@@ -1,0 +1,219 @@
+# ==============================================================================
+# Heretek OpenClaw Plugins - NPM Publishing Workflow
+# ==============================================================================
+# Publishes all plugins to npmjs.com under the @heretek-ai scope
+# Uses NPM_TOKEN secret for authentication
+# ==============================================================================
+
+name: NPM Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'plugins/**'
+      - '.github/workflows/npm-publish.yml'
+  workflow_dispatch:
+    inputs:
+      plugin:
+        description: 'Specific plugin to publish (leave empty for all)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # ==============================================================================
+  # Job: Detect Changed Plugins
+  # ==============================================================================
+  detect-changes:
+    name: Detect Changed Plugins
+    runs-on: ubuntu-latest
+    outputs:
+      plugins: ${{ steps.changes.outputs.plugins }}
+      all-plugins: ${{ steps.list-all.outputs.plugins }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed plugins
+        id: changes
+        run: |
+          # Get list of changed plugin directories
+          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | \
+            grep '^plugins/' | \
+            cut -d'/' -f2 | \
+            sort -u | \
+            jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "plugins=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed plugins: $CHANGED"
+
+      - name: List all plugins
+        id: list-all
+        run: |
+          # Get all plugin directories with package.json
+          ALL=$(find plugins -maxdepth 2 -name 'package.json' -not -path '*/templates/*' | \
+            xargs -I {} dirname {} | \
+            xargs -I {} basename {} | \
+            sort -u | \
+            jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "plugins=$ALL" >> $GITHUB_OUTPUT
+          echo "All plugins: $ALL"
+
+  # ==============================================================================
+  # Job: Publish All Plugins (on workflow dispatch or when no specific changes)
+  # ==============================================================================
+  publish-all:
+    name: Publish All Plugins
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: github.event_name == 'workflow_dispatch' || github.event.inputs.plugin != ''
+    strategy:
+      matrix:
+        plugin: ${{ fromJson(needs.detect-changes.outputs.all-plugins) }}
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: 'plugins/**/package-lock.json'
+
+      - name: Check if package exists
+        id: check
+        working-directory: 'plugins/${{ matrix.plugin }}'
+        run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "name=$PKG_NAME" >> $GITHUB_OUTPUT
+          echo "version=$PKG_VERSION" >> $GITHUB_OUTPUT
+          
+          # Check if this version already exists
+          if npm view "$PKG_NAME@$PKG_VERSION" &>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Version $PKG_VERSION already published"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Version $PKG_VERSION not yet published"
+          fi
+
+      - name: Install dependencies
+        if: steps.check.outputs.exists == 'false'
+        working-directory: 'plugins/${{ matrix.plugin }}'
+        run: npm ci || npm install
+
+      - name: Publish to npm
+        if: steps.check.outputs.exists == 'false'
+        working-directory: 'plugins/${{ matrix.plugin }}'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Output result
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          echo "Skipping ${{ steps.check.outputs.name }}@${{ steps.check.outputs.version }} - already published"
+
+  # ==============================================================================
+  # Job: Publish Changed Plugins (on push to main)
+  # ==============================================================================
+  publish-changed:
+    name: Publish Changed Plugins
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: github.event_name == 'push' && github.event.inputs.plugin == ''
+    strategy:
+      matrix:
+        plugin: ${{ fromJson(needs.detect-changes.outputs.plugins) }}
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: 'plugins/**/package-lock.json'
+
+      - name: Check if package.json exists
+        id: check-pkg
+        working-directory: 'plugins/${{ matrix.plugin }}'
+        run: |
+          if [ ! -f package.json ]; then
+            echo "has_package=false" >> $GITHUB_OUTPUT
+            echo "No package.json found for ${{ matrix.plugin }}"
+          else
+            echo "has_package=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get package info
+        id: pkg-info
+        if: steps.check-pkg.outputs.has-package == 'true'
+        working-directory: 'plugins/${{ matrix.plugin }}'
+        run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "name=$PKG_NAME" >> $GITHUB_OUTPUT
+          echo "version=$PKG_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if version exists
+        id: check-version
+        if: steps.pkg-info.outputs.name != ''
+        run: |
+          if npm view "${{ steps.pkg-info.outputs.name }}@${{ steps.pkg-info.outputs.version }}" &>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install dependencies
+        if: steps.check-version.outputs.exists == 'false'
+        working-directory: 'plugins/${{ matrix.plugin }}'
+        run: npm ci || npm install
+
+      - name: Publish to npm
+        if: steps.check-version.outputs.exists == 'false'
+        working-directory: 'plugins/${{ matrix.plugin }}'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ==============================================================================
+  # Job: Publish Summary
+  # ==============================================================================
+  summary:
+    name: Publish Summary
+    runs-on: ubuntu-latest
+    needs: [detect-changes, publish-all, publish-changed]
+    if: always()
+    steps:
+      - name: Output summary
+        run: |
+          echo "## NPM Publishing Summary"
+          echo ""
+          echo "**Workflow:** ${{ github.event_name }}"
+          echo "**Branch:** ${{ github.ref_name }}"
+          echo "**Commit:** ${{ github.sha }}"
+          echo ""
+          echo "### Results"
+          echo ""
+          echo "- Publish All Job: ${{ needs.publish-all.result }}"
+          echo "- Publish Changed Job: ${{ needs.publish-changed.result }}"
+          echo ""
+          echo "### Plugins Processed"
+          echo ""
+          echo "All plugins: ${{ needs.detect-changes.outputs.all-plugins }}"
+          echo "Changed plugins: ${{ needs.detect-changes.outputs.plugins }}"
