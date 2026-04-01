@@ -1,0 +1,56 @@
+{
+  "id": "tool-plugin",
+  "displayName": "Tool Plugin Template",
+  "version": "1.0.0",
+  "description": "A template for OpenClaw plugins that provide tools to agents",
+  "kind": "tool",
+  "keywords": ["template", "tool", "starter"],
+  "author": {
+    "name": "Your Name",
+    "email": "your@email.com"
+  },
+  "repository": "https://github.com/your-org/openclaw-tool-plugin",
+  "license": "MIT",
+  "main": "src/index.js",
+  "files": [
+    "package.json",
+    "README.md",
+    "SKILL.md",
+    "src/index.js",
+    "src/tools/",
+    "config/default.json",
+    ".env.example"
+  ],
+  "variables": {
+    "pluginName": {
+      "type": "string",
+      "description": "Plugin name (kebab-case)",
+      "required": true
+    },
+    "pluginDisplayName": {
+      "type": "string",
+      "description": "Human-readable plugin name",
+      "required": true
+    },
+    "pluginDescription": {
+      "type": "string",
+      "description": "Plugin description",
+      "required": true
+    },
+    "toolName": {
+      "type": "string",
+      "description": "Primary tool name",
+      "required": true
+    },
+    "toolDescription": {
+      "type": "string",
+      "description": "Primary tool description",
+      "required": true
+    },
+    "authorName": {
+      "type": "string",
+      "description": "Author name",
+      "required": true
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@heretek-ai/openclaw-{{pluginName}}",
+  "version": "1.0.0",
+  "description": "{{pluginDescription}}",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint src/",
+    "healthcheck": "node scripts/healthcheck.js"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "tool",
+    "{{pluginName}}",
+    "heretek"
+  ],
+  "author": "{{authorName}}",
+  "license": "MIT",
+  "dependencies": {
+    "eventemitter3": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "openclaw": ">=2026.3.0"
+  }
+}

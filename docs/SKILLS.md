@@ -1,8 +1,24 @@
 # Heretek OpenClaw Skills Repository
 
-**Version:** 2.0.3  
-**Last Updated:** 2026-03-31  
-**OpenClaw Gateway:** v2026.3.28
+**Version:** 2.0.4
+**Last Updated:** 2026-03-31
+**OpenClaw Gateway:** v2026.3.28+
+
+---
+
+## Plugin & Skills Documentation
+
+For comprehensive plugin and skills documentation, see the following guides:
+
+| Guide | Description |
+|-------|-------------|
+| [`docs/plugins/INSTALLATION_GUIDE.md`](./plugins/INSTALLATION_GUIDE.md) | Plugin installation procedures |
+| [`docs/plugins/DEVELOPMENT_GUIDE.md`](./plugins/DEVELOPMENT_GUIDE.md) | Plugin and skill development guide |
+| [`docs/plugins/PLUGIN_REGISTRY.md`](./plugins/PLUGIN_REGISTRY.md) | Plugin registry and compatibility |
+| [`docs/plugins/SECURITY_GUIDE.md`](./plugins/SECURITY_GUIDE.md) | Security guidelines |
+| [`docs/plugins/PLUGIN_CLI.md`](./plugins/PLUGIN_CLI.md) | CLI reference |
+| [`docs/plugins/TROUBLESHOOTING.md`](./plugins/TROUBLESHOOTING.md) | Troubleshooting guide |
+| [`plugins/templates/README.md`](../plugins/templates/README.md) | Plugin templates |
 
 ---
 

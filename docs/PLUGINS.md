@@ -1,8 +1,66 @@
 # Heretek OpenClaw Plugins
 
-**Version:** 2.0.3  
-**Last Updated:** 2026-03-31  
-**OpenClaw Gateway:** v2026.3.28
+**Version:** 2.0.5
+**Last Updated:** 2026-03-31
+**OpenClaw Gateway:** v2026.3.28+
+
+---
+
+## Plugin Documentation
+
+For comprehensive plugin documentation, see the following guides:
+
+| Guide | Description |
+|-------|-------------|
+| [`docs/plugins/INSTALLATION_GUIDE.md`](./plugins/INSTALLATION_GUIDE.md) | Plugin installation procedures and compatibility |
+| [`docs/plugins/DEVELOPMENT_GUIDE.md`](./plugins/DEVELOPMENT_GUIDE.md) | Plugin development guide with examples |
+| [`docs/plugins/PLUGIN_REGISTRY.md`](./plugins/PLUGIN_REGISTRY.md) | Available plugins and compatibility matrix |
+| [`docs/plugins/SECURITY_GUIDE.md`](./plugins/SECURITY_GUIDE.md) | Security guidelines and best practices |
+| [`docs/plugins/PLUGIN_CLI.md`](./plugins/PLUGIN_CLI.md) | CLI reference for plugin management |
+| [`docs/plugins/TROUBLESHOOTING.md`](./plugins/TROUBLESHOOTING.md) | Troubleshooting common plugin issues |
+| [`plugins/templates/README.md`](../plugins/templates/README.md) | Plugin templates for development |
+
+---
+
+## Agent Collective Roster
+
+The Heretek OpenClaw collective consists of the following agents organized by type:
+
+### Core Agents (Original)
+
+| Agent | Type | Role | Status |
+|-------|------|------|--------|
+| Steward | Orchestrator | Steers the collective | Active |
+| Alpha | Triad Node | Deliberation | Active |
+| Beta | Triad Node | Deliberation | Active |
+| Charlie | Triad Node | Deliberation | Active |
+| Sentinel | Advocate | Safety reviewer | Active |
+| Explorer | Specialist | Intelligence gatherer | Active |
+| Examiner | Advocate | Questioner of direction | Active |
+| Coder | Specialist | Implementation | Active |
+| Dreamer | Support | Background processing | Active |
+| Empath | Support | Relationship manager | Active |
+| Historian | Specialist | Memory keeper | Active |
+
+### Extended Agents (P6-7)
+
+| Agent | Type | Role | Status |
+|-------|------|------|--------|
+| Arbiter | Mediator | Conflict resolution | Active |
+| Sentinel-Prime | Guardian Prime | Senior safety reviewer | Active |
+| Perceiver | Sensor | Perception and input processing | Active |
+| Coordinator | Orchestrator Support | Workflow management | Active |
+| Habit-Forge | Behavior Architect | Habit formation | Active |
+| Chronos | Timekeeper | Time management | Active |
+| Metis | Sage | Wisdom and strategic counsel | Active |
+| Echo | Communicator | Output and messaging | Active |
+| Nexus | Integrator | External systems integration | Active |
+| Prism | Perspective Analyst | Multi-viewpoint analysis | Active |
+| Catalyst | Change Agent | Transformation and innovation | Active |
+
+**Total Agents:** 22
+
+---
 
 ---
 

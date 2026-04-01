@@ -1,0 +1,56 @@
+{
+  "id": "skill-plugin",
+  "displayName": "Skill Plugin Template",
+  "version": "1.0.0",
+  "description": "A template for OpenClaw plugins that provide skills to agents",
+  "kind": "skill",
+  "keywords": ["template", "skill", "starter"],
+  "author": {
+    "name": "Your Name",
+    "email": "your@email.com"
+  },
+  "repository": "https://github.com/your-org/openclaw-skill-plugin",
+  "license": "MIT",
+  "main": "src/index.js",
+  "files": [
+    "package.json",
+    "README.md",
+    "SKILL.md",
+    "src/index.js",
+    "src/skills/",
+    "config/default.json",
+    ".env.example"
+  ],
+  "variables": {
+    "pluginName": {
+      "type": "string",
+      "description": "Plugin name (kebab-case)",
+      "required": true
+    },
+    "pluginDisplayName": {
+      "type": "string",
+      "description": "Human-readable plugin name",
+      "required": true
+    },
+    "pluginDescription": {
+      "type": "string",
+      "description": "Plugin description",
+      "required": true
+    },
+    "skillName": {
+      "type": "string",
+      "description": "Primary skill name",
+      "required": true
+    },
+    "skillDescription": {
+      "type": "string",
+      "description": "Primary skill description",
+      "required": true
+    },
+    "authorName": {
+      "type": "string",
+      "description": "Author name",
+      "required": true
+    }
+  }
+}
