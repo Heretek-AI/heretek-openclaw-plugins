@@ -3,7 +3,7 @@
  * Handles semantic search using vector embeddings
  */
 
-const { LRU } = require('lru-cache');
+const { LRUCache } = require('lru-cache');
 
 class VectorSearch {
   constructor(config = {}) {
@@ -15,7 +15,7 @@ class VectorSearch {
       ...config
     };
 
-    this.cache = new LRU({ max: this.config.cacheSize });
+    this.cache = new LRUCache({ max: this.config.cacheSize });
     this.initialized = false;
     this.searchCount = 0;
     this.indexCount = 0;

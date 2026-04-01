@@ -33,6 +33,7 @@
     "openclaw": ">=1.0.0"
   },
   "openclaw": {
+    "extensions": ["./src/index.js"],
     "plugin": {
       "name": "consciousness",
       "version": "1.0.0",

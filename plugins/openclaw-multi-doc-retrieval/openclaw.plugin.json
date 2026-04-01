@@ -1,0 +1,30 @@
+{
+  "id": "multi-doc",
+  "name": "multi-doc",
+  "version": "1.0.0",
+  "description": "Multi-document context retrieval plugin",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "retrieval": {
+        "type": "object",
+        "properties": {
+          "maxDocuments": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 5
+          },
+          "contextWindow": {
+            "type": "integer",
+            "minimum": 100,
+            "default": 2000
+          }
+        }
+      },
+      "enabled": {
+        "type": "boolean",
+        "default": true
+      }
+    }
+  }
+}

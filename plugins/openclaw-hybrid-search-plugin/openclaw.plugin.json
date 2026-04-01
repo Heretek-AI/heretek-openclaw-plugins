@@ -1,0 +1,32 @@
+{
+  "id": "hybrid-search",
+  "name": "hybrid-search",
+  "version": "1.0.0",
+  "description": "Vector + keyword search fusion for enhanced retrieval",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "fusion": {
+        "type": "object",
+        "properties": {
+          "vectorWeight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.5
+          },
+          "keywordWeight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.5
+          }
+        }
+      },
+      "enabled": {
+        "type": "boolean",
+        "default": true
+      }
+    }
+  }
+}

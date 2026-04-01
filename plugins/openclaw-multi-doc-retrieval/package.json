@@ -36,6 +36,9 @@
     "@heretek-ai/openclaw-hybrid-search-plugin": ">=1.0.0"
   },
   "openclaw": {
+    "extensions": [
+      "./src/index.js"
+    ],
     "plugin": {
       "name": "multi-doc-retrieval",
       "version": "1.0.0",

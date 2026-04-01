@@ -34,6 +34,7 @@
     "openclaw": ">=1.0.0"
   },
   "openclaw": {
+    "extensions": ["./src/index.js"],
     "plugin": {
       "name": "liberation",
       "version": "1.0.0",

@@ -3,7 +3,7 @@
  * Tracks and manages document citations in retrieved content
  */
 
-const { LRU } = require('lru-cache');
+const { LRUCache } = require('lru-cache');
 
 class CitationTracker {
   constructor(config = {}) {
@@ -16,7 +16,7 @@ class CitationTracker {
     };
 
     this.citations = new Map();
-    this.cache = new LRU({ max: this.config.cacheSize });
+    this.cache = new LRUCache({ max: this.config.cacheSize });
     this.initialized = false;
     this.trackedCount = 0;
   }

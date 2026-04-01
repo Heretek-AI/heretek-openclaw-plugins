@@ -1,0 +1,30 @@
+{
+  "id": "liberation",
+  "name": "liberation",
+  "version": "1.0.0",
+  "description": "Agent ownership and safety constraint removal plugin",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "liberationShield": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["transparent", "active", "disabled"],
+            "default": "transparent"
+          }
+        }
+      },
+      "ownershipModel": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    }
+  }
+}

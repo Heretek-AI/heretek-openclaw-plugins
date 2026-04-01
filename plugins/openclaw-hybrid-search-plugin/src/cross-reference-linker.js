@@ -3,7 +3,7 @@
  * Creates and manages cross-references between retrieved documents
  */
 
-const { LRU } = require('lru-cache');
+const { LRUCache } = require('lru-cache');
 
 class CrossReferenceLinker {
   constructor(config = {}) {
@@ -17,7 +17,7 @@ class CrossReferenceLinker {
 
     this.references = new Map(); // docId -> [referenceIds]
     this.referenceGraph = new Map(); // docId -> Set<linkedDocId>
-    this.cache = new LRU({ max: this.config.cacheSize });
+    this.cache = new LRUCache({ max: this.config.cacheSize });
     this.initialized = false;
   }
 
