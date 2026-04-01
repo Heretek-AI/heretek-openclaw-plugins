@@ -3,10 +3,9 @@ module.exports = {
   register(api) {
     try {
       const plugin = new LiberationPlugin(api.config || {});
-      if (plugin.getStatus) api.registerTool('liberation-status', { description: 'Get liberation status', handler: () => plugin.getStatus() });
-      console.log('[liberation] Plugin registered successfully');
+      console.log('[liberation] Plugin loaded (tools disabled due to API compatibility)');
     } catch (err) {
-      console.error('[liberation] Registration failed:', err.message);
+      console.error('[liberation] Failed:', err.message);
     }
   }
 };
