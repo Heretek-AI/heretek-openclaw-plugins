@@ -1,0 +1,127 @@
+{
+  "id": "collective-comms",
+  "kind": "channel",
+  "channels": ["collective-comms"],
+  "name": "Collective Communications",
+  "description": "Multi-channel unified inbox with triad-aware message routing and visual agent-room assignment",
+  "version": "1.0.0",
+  "author": "Heretek-AI",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "collective-comms": {
+        "type": "object",
+        "properties": {
+          "platforms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "type": { 
+                  "type": "string", 
+                  "enum": ["matrix", "discord", "telegram", "signal", "whatsapp", "slack"] 
+                },
+                "enabled": { "type": "boolean" },
+                "token": { "type": "string" },
+                "serverUrl": { "type": "string" },
+                "credentials": { "type": "object" }
+              },
+              "required": ["id", "type", "enabled"]
+            }
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" },
+                "platform": { "type": "string" },
+                "platformRoomId": { "type": "string" },
+                "purpose": { 
+                  "type": "string", 
+                  "enum": ["deliberation", "broadcast", "alerts", "casual", "custom"] 
+                },
+                "assignedAgents": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "triadOnly": { "type": "boolean" },
+                "allowBots": { "type": "boolean" },
+                "requireMention": { "type": "boolean" }
+              },
+              "required": ["id", "name", "platform", "purpose"]
+            }
+          },
+          "agents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" },
+                "role": { 
+                  "type": "string", 
+                  "enum": ["orchestrator", "triad", "advisory", "specialist", "operator"] 
+                },
+                "capabilities": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "defaultRooms": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
+              "required": ["id", "name", "role"]
+            }
+          },
+          "routing": {
+            "type": "object",
+            "properties": {
+              "deliberationMode": { 
+                "type": "string", 
+                "enum": ["triad-only", "advisory-allowed", "open"] 
+              },
+              "broadcastChannels": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "alertChannels": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "crossPlatformSync": { "type": "boolean" },
+              "constitutionalReview": { "type": "boolean" }
+            }
+          },
+          "security": {
+            "type": "object",
+            "properties": {
+              "dmPolicy": { 
+                "type": "string", 
+                "enum": ["allowlist", "denylist", "open"] 
+              },
+              "allowFrom": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "requirePairing": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "ui": {
+    "configView": "graph",
+    "features": [
+      "interactive-room-builder",
+      "agent-assignment-canvas",
+      "message-flow-visualization",
+      "platform-connection-status"
+    ]
+  }
+}

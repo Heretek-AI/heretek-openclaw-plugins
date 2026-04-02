@@ -1,0 +1,36 @@
+{
+  "name": "@heretek/openclaw-collective-comms",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Unified multi-channel communication for The Collective with triad-aware routing and visual configuration",
+  "author": "Heretek-AI",
+  "license": "MIT",
+  "openclaw": {
+    "extensions": ["./index.ts"],
+    "setupEntry": "./setup-entry.ts",
+    "channel": {
+      "id": "collective-comms",
+      "label": "Collective Communications",
+      "blurb": "Multi-channel unified inbox with triad-aware message routing and visual agent-room assignment"
+    },
+    "compat": {
+      "pluginApi": ">=2026.3.24-beta.2",
+      "minGatewayVersion": "2026.3.24-beta.2"
+    },
+    "build": {
+      "openclawVersion": "2026.3.24-beta.2",
+      "pluginSdkVersion": "2026.3.24-beta.2"
+    }
+  },
+  "scripts": {
+    "test": "vitest run src/*.test.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.32.0"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0",
+    "typescript": "^5.0.0"
+  }
+}
