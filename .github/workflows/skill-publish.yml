@@ -1,0 +1,80 @@
+name: Skill Publish
+
+on:
+  push:
+    tags:
+      - "skills/*/v*"
+  workflow_dispatch:
+    inputs:
+      skill_path:
+        description: "Path to skill directory (e.g., skills/my-skill)"
+        required: true
+        type: string
+      version:
+        description: "Version to publish (semver)"
+        required: true
+        type: string
+      dry_run:
+        description: "Preview publish without uploading"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install ClawHub CLI
+        run: bun install -g clawhub
+
+      - name: Configure Git for version bumping
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Publish skill (tag push)
+        if: github.event_name == 'push'
+        env:
+          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
+        run: |
+          # Extract skill path and version from tag
+          # Tag format: skills/{skill-path}/v{version}
+          TAG="${{ github.ref_name }}"
+          SKILL_PATH=$(echo "$TAG" | sed -E 's/^skills\/(.+)\/v.*/\1/')
+          VERSION=$(echo "$TAG" | sed -E 's/^skills\/.+\/v(.+)/\1/')
+          
+          echo "Publishing skill: $SKILL_PATH at version $VERSION"
+          clawhub skill publish "skills/$SKILL_PATH" --version "$VERSION" --yes
+
+      - name: Publish skill (workflow dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
+        run: |
+          if [ "${{ inputs.dry_run }}" == "true" ]; then
+            clawhub skill publish "${{ inputs.skill_path }}" --version "${{ inputs.version }}" --dry-run --yes
+          else
+            clawhub skill publish "${{ inputs.skill_path }}" --version "${{ inputs.version }}" --yes
+          fi
+
+      - name: Upload publish result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-publish-result
+          path: |
+            ~/.clawhub/lock.json
+          retention-days: 7

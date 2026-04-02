@@ -1,0 +1,169 @@
+name: Package Publish
+
+on:
+  pull_request:
+    paths:
+      - "plugins/**"
+  workflow_dispatch:
+    inputs:
+      plugin_path:
+        description: "Path to plugin directory (e.g., plugins/my-plugin)"
+        required: true
+        type: string
+      dry_run:
+        description: "Preview publish without uploading"
+        required: false
+        type: boolean
+        default: false
+      owner:
+        description: "Publisher handle (optional, for admin publishing on behalf)"
+        required: false
+        type: string
+  push:
+    tags:
+      - "plugins/*/v*"
+
+jobs:
+  dry-run:
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dry_run == true)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      package_name: ${{ steps.resolve.outputs.package_name }}
+      package_version: ${{ steps.resolve.outputs.package_version }}
+      package_family: ${{ steps.resolve.outputs.package_family }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install ClawHub CLI
+        run: bun install -g clawhub
+
+      - name: Resolve package metadata
+        id: resolve
+        run: |
+          if [ -n "${{ inputs.plugin_path }}" ]; then
+            PLUGIN_PATH="${{ inputs.plugin_path }}"
+          else
+            # Extract from PR changes
+            PLUGIN_PATH=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '^plugins/' | head -1 | cut -d'/' -f1-2)
+          fi
+          
+          if [ -z "$PLUGIN_PATH" ]; then
+            echo "No plugin changes detected"
+            exit 1
+          fi
+          
+          echo "plugin_path=$PLUGIN_PATH" >> $GITHUB_OUTPUT
+          
+          # Read package.json for metadata
+          PACKAGE_JSON="$PLUGIN_PATH/package.json"
+          if [ -f "$PACKAGE_JSON" ]; then
+            PACKAGE_NAME=$(cat "$PACKAGE_JSON" | jq -r '.name')
+            PACKAGE_VERSION=$(cat "$PACKAGE_JSON" | jq -r '.version')
+            echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+            echo "package_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+          fi
+          
+          # Read openclaw.plugin.json for family
+          PLUGIN_JSON="$PLUGIN_PATH/openclaw.plugin.json"
+          if [ -f "$PLUGIN_JSON" ]; then
+            echo "package_family=code-plugin" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Dry run publish
+        env:
+          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
+        run: |
+          clawhub package publish "$PLUGIN_PATH" --dry-run --json
+
+      - name: Upload dry run result
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-dry-run-result
+          path: |
+            ${{ env.PLUGIN_PATH }}/package.json
+            ${{ env.PLUGIN_PATH }}/openclaw.plugin.json
+          retention-days: 7
+
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.dry_run != true || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: [dry-run]
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      package_name: ${{ steps.resolve.outputs.package_name }}
+      package_version: ${{ steps.resolve.outputs.package_version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install ClawHub CLI
+        run: bun install -g clawhub
+
+      - name: Resolve package metadata
+        id: resolve
+        run: |
+          if [ -n "${{ inputs.plugin_path }}" ]; then
+            PLUGIN_PATH="${{ inputs.plugin_path }}"
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            # Extract from tag: plugins/{plugin-path}/v{version}
+            TAG="${{ github.ref_name }}"
+            PLUGIN_PATH=$(echo "$TAG" | sed -E 's/^plugins\/(.+)\/v.*/\1/')
+            PLUGIN_PATH="plugins/$PLUGIN_PATH"
+          else
+            # Extract from PR changes
+            PLUGIN_PATH=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '^plugins/' | head -1 | cut -d'/' -f1-2)
+          fi
+          
+          if [ -z "$PLUGIN_PATH" ]; then
+            echo "No plugin changes detected"
+            exit 1
+          fi
+          
+          echo "plugin_path=$PLUGIN_PATH" >> $GITHUB_OUTPUT
+          
+          # Read package.json for metadata
+          PACKAGE_JSON="$PLUGIN_PATH/package.json"
+          if [ -f "$PACKAGE_JSON" ]; then
+            PACKAGE_NAME=$(cat "$PACKAGE_JSON" | jq -r '.name')
+            PACKAGE_VERSION=$(cat "$PACKAGE_JSON" | jq -r '.version')
+            echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+            echo "package_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish package
+        env:
+          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
+        run: |
+          if [ -n "${{ inputs.owner }}" ]; then
+            clawhub package publish "$PLUGIN_PATH" --owner "${{ inputs.owner }}" --json
+          else
+            clawhub package publish "$PLUGIN_PATH" --json
+          fi
+
+      - name: Upload publish result
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-publish-result
+          path: |
+            ${{ env.PLUGIN_PATH }}/package.json
+            ${{ env.PLUGIN_PATH }}/openclaw.plugin.json
+          retention-days: 7

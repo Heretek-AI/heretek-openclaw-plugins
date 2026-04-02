@@ -1,0 +1,180 @@
+name: ClawHub CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "skills/**"
+      - "plugins/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "skills/**"
+      - "plugins/**"
+  workflow_dispatch:
+
+jobs:
+  validate-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install ClawHub CLI
+        run: bun install -g clawhub
+
+      - name: Find changed skills
+        id: changes
+        if: github.event_name == 'pull_request'
+        run: |
+          CHANGED_SKILLS=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '^skills/[^/]\+/SKILL.md$' | cut -d'/' -f1-2 | sort -u | tr '\n' ' ')
+          echo "changed_skills=$CHANGED_SKILLS" >> $GITHUB_OUTPUT
+          
+          if [ -z "$CHANGED_SKILLS" ]; then
+            echo "No skill changes detected"
+          fi
+
+      - name: Validate skill format
+        run: |
+          for skill in ${{ steps.changes.outputs.changed_skills }}; do
+            if [ -f "$skill/SKILL.md" ]; then
+              echo "Validating $skill..."
+              # Check for required frontmatter
+              if ! head -10 "$skill/SKILL.md" | grep -q "^---"; then
+                echo "::warning::Missing YAML frontmatter in $skill/SKILL.md"
+              fi
+              
+              # Check for name field
+              if ! head -10 "$skill/SKILL.md" | grep -q "^name:"; then
+                echo "::error::Missing 'name' field in $skill/SKILL.md frontmatter"
+                exit 1
+              fi
+            fi
+          done
+
+  validate-plugins:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Find changed plugins
+        id: changes
+        if: github.event_name == 'pull_request'
+        run: |
+          CHANGED_PLUGINS=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '^plugins/[^/]\+/package.json$' | cut -d'/' -f1-2 | sort -u | tr '\n' ' ')
+          echo "changed_plugins=$CHANGED_PLUGINS" >> $GITHUB_OUTPUT
+          
+          if [ -z "$CHANGED_PLUGINS" ]; then
+            echo "No plugin changes detected"
+          fi
+
+      - name: Validate plugin manifests
+        run: |
+          for plugin in ${{ steps.changes.outputs.changed_plugins }}; do
+            if [ -f "$plugin/package.json" ]; then
+              echo "Validating $plugin..."
+              
+              # Check for openclaw.extensions field
+              if ! cat "$plugin/package.json" | jq -e '.openclaw.extensions' > /dev/null 2>&1; then
+                echo "::error::Missing 'openclaw.extensions' field in $plugin/package.json"
+                exit 1
+              fi
+            fi
+            
+            if [ -f "$plugin/openclaw.plugin.json" ]; then
+              echo "Validating manifest $plugin/openclaw.plugin.json..."
+              
+              # Validate JSON syntax
+              if ! cat "$plugin/openclaw.plugin.json" | jq . > /dev/null 2>&1; then
+                echo "::error::Invalid JSON in $plugin/openclaw.plugin.json"
+                exit 1
+              fi
+              
+              # Check for required fields
+              if ! cat "$plugin/openclaw.plugin.json" | jq -e '.id' > /dev/null 2>&1; then
+                echo "::error::Missing 'id' field in $plugin/openclaw.plugin.json"
+                exit 1
+              fi
+              
+              if ! cat "$plugin/openclaw.plugin.json" | jq -e '.configSchema' > /dev/null 2>&1; then
+                echo "::error::Missing 'configSchema' field in $plugin/openclaw.plugin.json"
+                exit 1
+              fi
+            fi
+          done
+
+      - name: Install plugin dependencies
+        run: |
+          for plugin in ${{ steps.changes.outputs.changed_plugins }}; do
+            if [ -d "$plugin" ]; then
+              echo "Installing dependencies for $plugin..."
+              cd "$plugin" && npm install --omit=dev --ignore-scripts || true
+              cd - > /dev/null
+            fi
+          done
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install ClawHub CLI
+        run: bun install -g clawhub
+
+      - name: Scan skills for security issues
+        run: |
+          echo "Note: Full security scanning requires ClawHub API access"
+          echo "Local security checks:"
+          
+          # Check for hardcoded secrets patterns
+          for skill_file in $(find skills -name "*.md" -o -name "*.js" -o -name "*.ts" -o -name "*.py" 2>/dev/null); do
+            if grep -qE "(sk_[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|AKIA[0-9A-Z]{16})" "$skill_file" 2>/dev/null; then
+              echo "::warning::Potential hardcoded secret found in $skill_file"
+            fi
+          done
+
+      - name: Scan plugins for security issues
+        run: |
+          echo "Note: Full security scanning requires ClawHub API access"
+          echo "Local security checks:"
+          
+          # Check for hardcoded secrets patterns
+          for plugin_file in $(find plugins -name "*.js" -o -name "*.ts" -o -name "*.json" 2>/dev/null); do
+            if grep -qE "(sk_[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|AKIA[0-9A-Z]{16})" "$plugin_file" 2>/dev/null; then
+              echo "::warning::Potential hardcoded secret found in $plugin_file"
+            fi
+          done
+
+  report:
+    runs-on: ubuntu-latest
+    needs: [validate-skills, validate-plugins, security-scan]
+    if: always()
+    steps:
+      - name: Generate validation report
+        run: |
+          echo "## ClawHub Validation Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Skills Validation | ${{ needs.validate-skills.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Plugins Validation | ${{ needs.validate-plugins.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Scan | ${{ needs.security-scan.result }} |" >> $GITHUB_STEP_SUMMARY
