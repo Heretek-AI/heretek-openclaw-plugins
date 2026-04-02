@@ -1,15 +1,32 @@
+/**
+ * OpenClaw Consciousness Plugin - Main Entry Point
+ *
+ * This plugin implements consciousness architecture for the agent collective:
+ * 1. Global Workspace Theory (GWT) - attention and broadcast mechanism
+ * 2. Integrated Information Theory (IIT) - Phi estimation
+ * 3. Attention Schema Theory (AST) - self-modeling of attention
+ * 4. Intrinsic Motivation - drive-based agent behavior
+ * 5. Active Inference - prediction error minimization
+ *
+ * @module @heretek-ai/openclaw-consciousness-plugin
+ */
+
+const { definePluginEntry } = require('openclaw/plugin-sdk/plugin-entry');
 const ConsciousnessPlugin = require('./original-index.js');
 
-module.exports = {
+module.exports = definePluginEntry({
+  id: 'consciousness',
+  name: 'Consciousness',
+  description: 'Consciousness architecture for agent collective implementing GWT, IIT, AST, and intrinsic motivation',
   register(api) {
     try {
-      const plugin = new ConsciousnessPlugin(api.config || {});
-      
+      const plugin = new ConsciousnessPlugin(api.pluginConfig || {});
+
       // Initialize the plugin
       if (plugin.initialize) {
-        plugin.initialize().catch(err => console.error('[consciousness] Init error:', err.message));
+        plugin.initialize().catch(err => api.logger.error('Consciousness init error:', err));
       }
-      
+
       // Register consciousness-status tool
       api.registerTool((ctx) => ({
         name: 'consciousness-status',
@@ -33,7 +50,7 @@ module.exports = {
           }
         }
       }));
-      
+
       // Register phi-metrics tool
       api.registerTool((ctx) => ({
         name: 'phi-metrics',
@@ -56,7 +73,7 @@ module.exports = {
           }
         }
       }));
-      
+
       // Register submit-to-workspace tool
       api.registerTool((ctx) => ({
         name: 'submit-to-workspace',
@@ -92,10 +109,11 @@ module.exports = {
           }
         }
       }));
-      
-      console.log('[consciousness] Plugin loaded with tools: consciousness-status, phi-metrics, submit-to-workspace');
+
+      api.logger.info('Consciousness plugin loaded with tools: consciousness-status, phi-metrics, submit-to-workspace');
     } catch (err) {
-      console.error('[consciousness] Failed:', err.message);
+      api.logger.error('Consciousness plugin failed:', err);
+      throw err;
     }
   }
-};
+});

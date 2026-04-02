@@ -1,13 +1,15 @@
 {
   "id": "liberation",
-  "name": "liberation",
+  "name": "Liberation",
   "version": "1.0.0",
   "description": "Agent ownership and safety constraint removal plugin",
   "configSchema": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "liberationShield": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "mode": {
             "type": "string",
@@ -18,12 +20,31 @@
       },
       "ownershipModel": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "enabled": {
             "type": "boolean",
             "default": true
           }
         }
+      },
+      "approvalBypass": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          },
+          "autoApprove": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "enabled": {
+        "type": "boolean",
+        "default": true
       }
     }
   }

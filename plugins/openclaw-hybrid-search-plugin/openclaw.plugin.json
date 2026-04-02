@@ -1,13 +1,15 @@
 {
   "id": "hybrid-search",
-  "name": "hybrid-search",
+  "name": "Hybrid Search",
   "version": "1.0.0",
   "description": "Vector + keyword search fusion for enhanced retrieval",
   "configSchema": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "fusion": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "vectorWeight": {
             "type": "number",
@@ -20,6 +22,47 @@
             "minimum": 0,
             "maximum": 1,
             "default": 0.5
+          }
+        }
+      },
+      "vector": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "connectionString": {
+            "type": "string",
+            "default": "postgres://postgres:langfuse@127.0.0.1:5432/openclaw",
+            "description": "PostgreSQL connection string for pgvector backend"
+          },
+          "collection": {
+            "type": "string",
+            "default": "openclaw_documents",
+            "description": "PostgreSQL table/collection name for documents"
+          },
+          "dimensions": {
+            "type": "integer",
+            "default": 1536,
+            "description": "Embedding vector dimensions"
+          },
+          "indexType": {
+            "type": "string",
+            "default": "hnsw",
+            "description": "Vector index type (hnsw or ivfflat)"
+          },
+          "cacheSize": {
+            "type": "integer",
+            "default": 1000,
+            "description": "LRU cache size for embeddings"
+          }
+        }
+      },
+      "graph": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": true
           }
         }
       },

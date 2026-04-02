@@ -13,7 +13,7 @@ class VectorSearch {
       dimensions: config.dimensions || 1536,
       indexType: config.indexType || 'hnsw',
       cacheSize: config.cacheSize || 1000,
-      connectionString: config.connectionString || 'postgres://postgres:langfuse@127.0.0.1:5432/openclaw',
+      connectionString: config.connectionString || 'postgres://heretek:zHNb5MMUOWEHWcv8pHTOpl+hwoLCAi1v@127.0.0.1:5432/heretek',
       collection: config.collection || 'openclaw_documents',
       ...config
     };

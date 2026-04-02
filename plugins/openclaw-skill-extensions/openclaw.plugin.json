@@ -1,15 +1,17 @@
 {
   "id": "skill-extensions",
-  "name": "skill-extensions",
+  "name": "Skill Extensions",
   "version": "1.0.0",
   "description": "Custom skill composition and versioning plugin",
   "configSchema": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "extensions": {
         "type": "array",
         "items": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "name": { "type": "string" },
             "version": { "type": "string" }

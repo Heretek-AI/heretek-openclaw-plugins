@@ -1,13 +1,15 @@
 {
   "id": "multi-doc",
-  "name": "multi-doc",
+  "name": "Multi-Document Retrieval",
   "version": "1.0.0",
   "description": "Multi-document context retrieval plugin",
   "configSchema": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "retrieval": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "maxDocuments": {
             "type": "integer",

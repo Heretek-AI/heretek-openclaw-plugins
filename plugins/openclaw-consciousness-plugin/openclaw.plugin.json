@@ -1,13 +1,15 @@
 {
   "id": "consciousness",
-  "name": "consciousness",
+  "name": "Consciousness",
   "version": "1.0.0",
   "description": "Consciousness architecture for agent collective implementing GWT, IIT, AST, and intrinsic motivation",
   "configSchema": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "globalWorkspace": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "ignitionThreshold": {
             "type": "number",
@@ -19,6 +21,7 @@
       },
       "phiEstimator": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "enabled": {
             "type": "boolean",
@@ -28,6 +31,7 @@
       },
       "attentionSchema": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "enabled": {
             "type": "boolean",
@@ -37,12 +41,17 @@
       },
       "intrinsicMotivation": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "enabled": {
             "type": "boolean",
             "default": true
           }
         }
+      },
+      "enabled": {
+        "type": "boolean",
+        "default": true
       }
     }
   }
