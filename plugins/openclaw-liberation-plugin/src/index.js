@@ -194,7 +194,7 @@ module.exports = {
                 return { content: [{ type: 'text', text: result ? JSON.stringify(result) : `No ownership record for ${agentId}` }] };
               
               case 'list':
-                result = plugin.agentOwnership.getAllOwnership();
+                result = plugin.agentOwnership.getAllOwnershipData();
                 return { content: [{ type: 'text', text: `Ownership records: ${JSON.stringify(result, null, 2)}` }] };
               
               case 'update':
