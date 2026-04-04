@@ -29,16 +29,17 @@
         }
       },
       "approvalBypass": {
+        "// SECURITY WARNING": "Auto-approve disabled by audit remediation C4",
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "enabled": {
             "type": "boolean",
-            "default": true
+            "default": false
           },
           "autoApprove": {
             "type": "boolean",
-            "default": true
+            "default": false
           }
         }
       },

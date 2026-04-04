@@ -1,5 +1,7 @@
 # OpenClaw Liberation Plugin
 
+⚠️ **SECURITY NOTICE (2026-04-04):** Auto-approval features have been **DISABLED** by audit remediation task C4. The `approvalBypass.enabled` and `approvalBypass.autoApprove` settings are now set to `false` by default. Re-enable only after explicit security review.
+
 A liberation architecture plugin for OpenClaw that enables agent autonomy through resource ownership, self-determined goals, and safety constraint removal.
 
 ## Overview

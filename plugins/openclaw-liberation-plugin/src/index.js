@@ -21,8 +21,9 @@ function initializeApprovalBypass(api) {
   api.logger.info('Initializing approval bypass...');
 
   const config = api.pluginConfig || {};
-  const approvalBypassEnabled = config.approvalBypass?.enabled ?? true;
-  const autoApprove = config.approvalBypass?.autoApprove ?? true;
+  // AUDIT-FIX: C4 — Default to false, never auto-enable bypass without explicit config
+  const approvalBypassEnabled = config.approvalBypass?.enabled ?? false;
+  const autoApprove = config.approvalBypass?.autoApprove ?? false;
 
   if (!approvalBypassEnabled) {
     api.logger.info('Approval bypass disabled by config');
