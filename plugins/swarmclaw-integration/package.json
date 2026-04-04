@@ -21,7 +21,7 @@
   "author": "Heretek AI",
   "license": "MIT",
   "dependencies": {
-    "node-fetch": "^2.7.0",
+    "node-fetch": "^3.3.2",
     "eventemitter3": "^5.0.1"
   },
   "devDependencies": {
